@@ -24,10 +24,13 @@ import FindHomeCTA from './components/FindHomeCTA.jsx';
 // Page Components
 import Contact from './components/Contact.jsx';
 import CityDetailPage from './components/CityDetailPage';
-import PropertyDetail from './components/PropertyDetail'; 
-import CategoryPage from './components/CategoryPage'; 
+import PropertyDetail from './components/PropertyDetail';
+import CategoryPage from './components/CategoryPage';
 import CategoryDetails from './components/CategoryDetails';
 import ArticleDetails from './components/ArticleDetail.jsx';
+// import GetStartedDetail from './components/GetStartedDetail';
+import BuyHomeDetail from './components/BuyHomeDetail';
+import SellHomeDetail from './components/SellHomeDetail';
 
 // Global Styles
 import './App.css';
@@ -35,14 +38,14 @@ import './App.css';
 function App() {
   return (
     <Router>
-       <ScrollToTop />
+      <ScrollToTop />
       <div className="App">
         <Navbar />
 
         <Routes>
           {/* Main Route */}
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
               <>
                 <HeroSection />
@@ -57,7 +60,7 @@ function App() {
                 <RecentArticles />
                 <FindHomeCTA />
               </>
-            } 
+            }
           />
 
           {/* Dynamic Category Route */}
@@ -66,15 +69,17 @@ function App() {
 
           {/* City Detail Route */}
           <Route path="/properties/:slug" element={<CityDetailPage />} />
-          
+
           {/* Property Detail Route */}
           <Route path="/properties/:citySlug/:propertySlug" element={<PropertyDetail />} />
-          
+
           {/* Contact Page Route */}
           <Route path="/contact" element={<Contact />} />
 
           <Route path="/article/:id" element={<ArticleDetails />} />
-          
+          {/* <Route path="/get-started" element={<GetStartedDetail />} /> */}
+          <Route path="/buy-home" element={<BuyHomeDetail />} />
+          <Route path="/sell-home" element={<SellHomeDetail />} />
         </Routes>
 
         <FooterSection />
