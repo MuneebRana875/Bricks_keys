@@ -45,7 +45,7 @@ const CategoryDetails = () => {
   return (
     <div className="category-details-wrapper">
       <div className="container py-4" style={{ marginBottom: '100px', minHeight: '80vh' }}>
-        /* Back Button */
+       
         <button 
           className="btn mb-4 d-flex align-items-center gap-2 back-btn-anim"
           onClick={() => navigate(-1)}
@@ -53,10 +53,10 @@ const CategoryDetails = () => {
           <i className="bi bi-arrow-left"></i> Back to {property.type}
         </button>
 
-        /* Property Details Content */
+        
         <div className="property-details-container">
           <div className="row g-4 align-items-stretch">
-            /* Main Image Section */
+            
             <div className="col-lg-7">
               <div className="main-image-wrapper h-100">
                 <img 
@@ -68,7 +68,7 @@ const CategoryDetails = () => {
               </div>
             </div>
 
-            /* Property Info Section */
+            
             <div className="col-lg-5">
               <div className="property-info-card h-100 d-flex flex-column justify-content-between">
                 <div>
@@ -128,7 +128,7 @@ const CategoryDetails = () => {
                 </div>
 
                 <div className="action-buttons">
-                  /* Redirect to Contact Page */
+                  
                   <button 
                     className="btn contact-btn w-100 mb-2" 
                     onClick={() => navigate('/contact')}
