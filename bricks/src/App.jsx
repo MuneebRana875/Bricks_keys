@@ -25,7 +25,8 @@ import FindHomeCTA from './components/FindHomeCTA.jsx';
 import Contact from './components/Contact.jsx';
 import CityDetailPage from './components/CityDetailPage';
 import PropertyDetail from './components/PropertyDetail'; 
-import CategoryPage from './components/CategoryPage'; // Imported separately now
+import CategoryPage from './components/CategoryPage'; 
+import CategoryDetails from './components/CategoryDetails';
 
 // Global Styles
 import './App.css';
@@ -60,6 +61,7 @@ function App() {
 
           {/* Dynamic Category Route */}
           <Route path="/category/:categoryType" element={<CategoryPage />} />
+          <Route path="/property/:propertyId" element={<CategoryDetails />} />
 
           {/* City Detail Route */}
           <Route path="/properties/:slug" element={<CityDetailPage />} />
