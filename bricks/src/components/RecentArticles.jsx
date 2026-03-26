@@ -42,7 +42,7 @@ const RecentArticles = () => {
   return (
     <section className="py-5 bg-white">
       <div className="container">
-        /* Header */
+      
         <div className="text-center mb-5">
           <h2 className="fw-bold" style={{ color: '#1A1A1A', fontSize: '2.5rem' }}>
             Recent Articles & News
@@ -52,12 +52,12 @@ const RecentArticles = () => {
           </p>
         </div>
 
-        /* Grid */
+      
         <div className="row g-4">
           {articles.map((article) => (
             <div key={article.id} className="col-12 col-md-6 col-lg-3">
               <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-                /* Article Image */
+                
                 <div style={{ height: '200px', overflow: 'hidden' }}>
                   <img
                     src={article.image}
