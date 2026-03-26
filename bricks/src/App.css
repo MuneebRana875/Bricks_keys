@@ -1,0 +1,71 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.User-icon{
+    border-radius: 100%;
+    border: solid 1px #000000;
+    padding: 4px;
+    height: 25px;
+    width: 25px;
+}
+.container{
+    max-width: 1250px;
+    
+}
+.hero-section{
+    height: 90vh;
+    background-image: url('/public/images/heroSectionimg.png');
+    background-size: cover;
+}
+.guide-btn{
+    color: #000000;
+    padding: 10px 20px;
+    font-size: 15px;
+    border: solid 1px #000000;
+    cursor: pointer;
+    margin-bottom: 20px;
+    background-color: white;
+    
+}
+.search-box{
+    width: 50%;
+    background-color: white;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    border: solid 1px #000000;
+    
+}
+.search-box .search-input{
+    border: none;
+   outline: none !important;
+    width: 100%;
+}
+.search-box .search-input:focus{
+    outline: none;
+    box-shadow: none;
+}
+.filter-btn{
+    padding: 8px 16px;
+    border: solid 1px #000000;
+    background-color: white;
+    cursor: pointer;
+}
+.TrustedCompnaies-div{
+    background-color: #1F4B43;
+}
+.footerbutton{
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+.custom-btn-outline:hover{
+    background-color:#2C4B40;
+    color: #ffffff !important;
+    border: solid 1px #000000;
+}
+.category-tag-anim {
+    font-family: 'some-weird-font' !important; 
+}

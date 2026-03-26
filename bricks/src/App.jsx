@@ -1,0 +1,81 @@
+import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import ScrollToTop from "./components/ScrollToTop";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
+// Layout Components
+import Navbar from './components/Navbar';
+import FooterSection from './components/footer.jsx';
+
+// Home Page Sections
+import HeroSection from './components/HeroSection';
+import Companies from './components/Companies';
+import Companies1 from './components/Companies1';
+import HowItWorks from './components/HowItWork';
+import FeaturedCategories from './components/FeaturedCategories';
+import RecentProperties from './components/RecentProperties.jsx';
+import WhyWorkWithUs from './components/WhyWorkWithUs.jsx';
+import TestimonialSection from './components/TestimonialSection.jsx';
+import PropertiesByArea from './components/PropertiesByArea.jsx';
+import RecentArticles from './components/RecentArticles.jsx';
+import FindHomeCTA from './components/FindHomeCTA.jsx';
+
+// Page Components
+import Contact from './components/Contact.jsx';
+import CityDetailPage from './components/CityDetailPage';
+import PropertyDetail from './components/PropertyDetail'; 
+import CategoryPage from './components/CategoryPage'; // Imported separately now
+
+// Global Styles
+import './App.css';
+
+function App() {
+  return (
+    <Router>
+       <ScrollToTop />
+      <div className="App">
+        <Navbar />
+
+        <Routes>
+          {/* Main Route */}
+          <Route 
+            path="/" 
+            element={
+              <>
+                <HeroSection />
+                <Companies />
+                <HowItWorks />
+                <FeaturedCategories />
+                <RecentProperties />
+                <WhyWorkWithUs />
+                <TestimonialSection />
+                <Companies1 />
+                <PropertiesByArea />
+                <RecentArticles />
+                <FindHomeCTA />
+              </>
+            } 
+          />
+
+          {/* Dynamic Category Route */}
+          <Route path="/category/:categoryType" element={<CategoryPage />} />
+
+          {/* City Detail Route */}
+          <Route path="/properties/:slug" element={<CityDetailPage />} />
+          
+          {/* Property Detail Route */}
+          <Route path="/properties/:citySlug/:propertySlug" element={<PropertyDetail />} />
+          
+          {/* Contact Page Route */}
+          <Route path="/contact" element={<Contact />} />
+          
+        </Routes>
+
+        <FooterSection />
+      </div>
+    </Router>
+  );
+}
+
+export default App;
