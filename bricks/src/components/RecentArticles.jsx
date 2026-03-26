@@ -1,10 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; 
 
 // Images Import
-import img1 from '../assets/images/343.png'; //
-import img2 from '../assets/images/347.png'; //
-import img3 from '../assets/images/351.png'; //
-import img4 from '../assets/images/317.png'; //
+import img1 from '../assets/images/343.png';
+import img2 from '../assets/images/347.png';
+import img3 from '../assets/images/351.png';
+import img4 from '../assets/images/317.png';
 
 const RecentArticles = () => {
   const articles = [
@@ -41,22 +42,22 @@ const RecentArticles = () => {
   return (
     <section className="py-5 bg-white">
       <div className="container">
-        {/* Header */}
+        /* Header */
         <div className="text-center mb-5">
           <h2 className="fw-bold" style={{ color: '#1A1A1A', fontSize: '2.5rem' }}>
             Recent Articles & News
           </h2>
           <p className="text-muted">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Stay updated with the latest trends and news in the real estate world.
           </p>
         </div>
 
-        {/* Grid */}
+        /* Grid */
         <div className="row g-4">
           {articles.map((article) => (
             <div key={article.id} className="col-12 col-md-6 col-lg-3">
               <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-                {/* Article Image */}
+                /* Article Image */
                 <div style={{ height: '200px', overflow: 'hidden' }}>
                   <img
                     src={article.image}
@@ -78,13 +79,15 @@ const RecentArticles = () => {
                   <h6 className="fw-bold mb-4" style={{ color: '#1A1A1A', lineHeight: '1.5', minHeight: '45px' }}>
                     {article.title}
                   </h6>
-                  <a
-                    href="#"
+                  
+                  
+                  <Link
+                    to={`/article/${article.id}`} 
                     className="text-decoration-none fw-bold"
                     style={{ color: '#1A1A1A', fontSize: '14px' }}
                   >
                     Read More <span className="ms-1">→</span>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

@@ -27,6 +27,7 @@ import CityDetailPage from './components/CityDetailPage';
 import PropertyDetail from './components/PropertyDetail'; 
 import CategoryPage from './components/CategoryPage'; 
 import CategoryDetails from './components/CategoryDetails';
+import ArticleDetails from './components/ArticleDetail.jsx';
 
 // Global Styles
 import './App.css';
@@ -71,6 +72,8 @@ function App() {
           
           {/* Contact Page Route */}
           <Route path="/contact" element={<Contact />} />
+
+          <Route path="/article/:id" element={<ArticleDetails />} />
           
         </Routes>
 
