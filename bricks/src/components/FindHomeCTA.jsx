@@ -1,46 +1,29 @@
 import React from "react";
 import { FaArrowRight } from "react-icons/fa";
-import { Link } from "react-router-dom"; // Link import zaroori hai
+import { Link } from "react-router-dom"; 
 
 // Images Import
 import home1 from "../assets/images/h47.png.png"; 
 import home2 from "../assets/images/h48.png.png";
 
 const FindHomeCTA = () => {
-  // Common Button Style taake code saaf rahe
-  const buttonStyle = {
-    background: "#1A432F", // Theme Green Color
-    color: "#fff",
-    border: "none",
-    padding: "12px 24px",
-    borderRadius: "10px",
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "10px",
-    fontWeight: "600",
-    textDecoration: "none", // Link ki underline khatam karne ke liye
-    transition: "0.3s ease"
-  };
-
   return (
     <section style={{ padding: "80px 0", background: "#fdf7f5" }}>
       <div className="container">
         <div className="row g-4">
 
-          {/* Card 1: Looking for new home (Buying) */}
+          {/* Card 1: Looking for new home */}
           <div className="col-lg-6">
             <div
-              className="cta-card"
               style={{
-                background: "#F2F2F2", // Light Grey Background
+                background: "#F2F2F2", 
                 padding: "40px",
                 borderRadius: "20px",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
                 height: "100%",
-                overflow: "hidden",
-                position: "relative"
+                overflow: "hidden"
               }}
             >
               <div style={{ flex: 1, zIndex: 1 }}>
@@ -61,10 +44,21 @@ const FindHomeCTA = () => {
                   a community of thousands of users.
                 </p>
 
-                {/* Link to Buy Home Page */}
-                <Link 
-                  to="/buy-home" 
-                  style={buttonStyle}
+                <Link
+                  to="/get-started"
+                  className="text-decoration-none"
+                  style={{
+                    background: "#1A432F", 
+                    color: "#fff",
+                    padding: "12px 24px",
+                    borderRadius: "10px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    fontWeight: "600",
+                    transition: "0.3s",
+                    border: "none"
+                  }}
                   onMouseOver={(e) => (e.currentTarget.style.opacity = "0.9")}
                   onMouseOut={(e) => (e.currentTarget.style.opacity = "1")}
                 >
@@ -86,20 +80,18 @@ const FindHomeCTA = () => {
             </div>
           </div>
 
-          {/* Card 2: Want to sell home (Selling) */}
+          {/* Card 2: Want to sell home */}
           <div className="col-lg-6">
             <div
-              className="cta-card"
               style={{
-                background: "#F2E7E3", // Peach/Light Brown Background
+                background: "#F2E7E3", 
                 padding: "40px",
                 borderRadius: "20px",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
                 height: "100%",
-                overflow: "hidden",
-                position: "relative"
+                overflow: "hidden"
               }}
             >
               <div style={{ flex: 1, zIndex: 1 }}>
@@ -120,10 +112,21 @@ const FindHomeCTA = () => {
                   a community of thousands of users.
                 </p>
 
-                {/* Link to Sell Home Page */}
-                <Link 
-                  to="/sell-home" 
-                  style={buttonStyle}
+                <Link
+                  to="/get-started"
+                  className="text-decoration-none"
+                  style={{
+                    background: "#1A432F",
+                    color: "#fff",
+                    padding: "12px 24px",
+                    borderRadius: "10px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    fontWeight: "600",
+                    transition: "0.3s",
+                    border: "none"
+                  }}
                   onMouseOver={(e) => (e.currentTarget.style.opacity = "0.9")}
                   onMouseOut={(e) => (e.currentTarget.style.opacity = "1")}
                 >
