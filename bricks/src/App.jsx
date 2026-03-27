@@ -20,6 +20,13 @@ import TestimonialSection from './components/TestimonialSection.jsx';
 import PropertiesByArea from './components/PropertiesByArea.jsx';
 import RecentArticles from './components/RecentArticles.jsx';
 import FindHomeCTA from './components/FindHomeCTA.jsx';
+import HomePage from './components/HomePage';
+import GridLayout from './components/GridLayout';
+import ListLayout from './components/ListLayout';
+import MapView from './components/MapView';
+import AboutUs from './components/AboutUs';
+import FAQ from './components/FAQ';
+import AddProperty from './components/AddProperty';
 
 // Page Components
 import Contact from './components/Contact.jsx';
@@ -81,12 +88,20 @@ function App() {
           <Route path="/article/:id" element={<ArticleDetails />} />
           <Route path="/get-started" element={<GetStartedDetail />} />
 
-      
-        <Route path="/about-details" element={<AboutDetails />} />
-        <Route path="/all-properties" element={<AllProperties />} />
-        <Route path="/for-sale" element={<ForSale />} />
-        <Route path="/for-rent" element={<ForRent />} />
-        
+
+          <Route path="/about-details" element={<AboutDetails />} />
+          <Route path="/all-properties" element={<AllProperties />} />
+          <Route path="/for-sale" element={<ForSale />} />
+          <Route path="/for-rent" element={<ForRent />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/listings/grid" element={<GridLayout />} />
+          <Route path="/listings/list" element={<ListLayout />} />
+          <Route path="/listings/map" element={<MapView />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/add-property" element={<AddProperty />} />
+
         </Routes>
 
         <FooterSection />
@@ -95,4 +110,4 @@ function App() {
   );
 }
 
-export default App;
+export default App; 
