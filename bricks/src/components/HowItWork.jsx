@@ -4,36 +4,37 @@ const HowItWorks = () => {
   const steps = [
     {
       id: 1,
-      title: "1. Search for your favorite house in your location",
-      description: "Pellentesque egestas elementum egestas faucibus sem.",
-      imageSrc: "/images/h41.png" // Ensure this is in public/images/h41.png
+      title: "1. Browse verified listings in your area",
+      description: "Explore a wide range of properties with detailed photos and accurate pricing to find your perfect match.",
+      imageSrc: "/images/h41.png"
     },
     {
       id: 2,
-      title: "2. Make a visit appointment with one of your agents",
-      description: "Pellentesque egestas elementum egestas faucibus sem.",
-      imageSrc: "/images/h42.png" // Update to your actual file name
+      name: "Make a visit appointment with our agents",
+      title: "2. Schedule a guided tour with experts",
+      description: "Connect with our professional agents to arrange private viewings and get expert advice on your favorite homes.",
+      imageSrc: "/images/h42.png"
     },
     {
       id: 3,
-      title: "3. Get your dream house in a month, or less",
-      description: "Pellentesque egestas elementum egestas faucibus sem.",
-      imageSrc: "/images/h43.png" // Update to your actual file name
+      title: "3. Fast-track your home ownership",
+      description: "Complete the legal paperwork seamlessly and move into your dream house in 30 days or even less.",
+      imageSrc: "/images/h43.png"
     }
   ];
 
   return (
     <section className="py-5 bg-white">
       <div className="container text-center">
-        {/* Header Section */}
         <div className="mb-5">
-          <h2 className="fw-bold mb-3" style={{ fontSize: '2.5rem' }}>
+          <h2 className="fw-bold mb-3" style={{ fontSize: '2.5rem', color: '#1A1A1A' }}>
             Find Your Dream House as Easy as 1,2,3
           </h2>
-          <p className="text-muted">Lorem ipsum dolor sit amet</p>
+          <p className="text-muted mx-auto" style={{ maxWidth: '600px' }}>
+            We simplify the process of buying a home so you can focus on making memories.
+          </p>
         </div>
 
-        {/* Steps Grid */}
         <div className="row g-4 mt-4">
           {steps.map((step) => (
             <div key={step.id} className="col-md-4">
@@ -43,24 +44,23 @@ const HowItWorks = () => {
                     className="rounded-circle d-flex align-items-center justify-content-center"
                     style={{ 
                       width: '180px', 
-                      height: '180px', 
+                      height: '180px',
+                      backgroundColor: '#FDF7F5' 
                     }}
                   >
                     <img 
                       src={step.imageSrc} 
                       alt={step.title} 
                       className="img-fluid"
-                      style={{ maxHeight: '90px', objectFit: 'contain' }}
-                     
-                      
+                      style={{ maxHeight: '100px', objectFit: 'contain' }}
                     />
                   </div>
                 </div>
 
-                <h5 className="fw-bold mb-3 px-lg-4" style={{ lineHeight: '1.4' }}>
+                <h5 className="fw-bold mb-3 px-lg-4" style={{ lineHeight: '1.4', color: '#1A432F' }}>
                   {step.title}
                 </h5>
-                <p className="text-secondary small px-lg-5">
+                <p className="text-secondary small px-lg-5" style={{ lineHeight: '1.6' }}>
                   {step.description}
                 </p>
               </div>
