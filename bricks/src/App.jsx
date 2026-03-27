@@ -29,8 +29,8 @@ import CategoryPage from './components/CategoryPage';
 import CategoryDetails from './components/CategoryDetails';
 import ArticleDetails from './components/ArticleDetail.jsx';
 import GetStartedDetail from './components/GetStartedDetail';
-// import BuyHomeDetail from './components/BuyHomeDetail';
-// import SellHomeDetail from './components/SellHomeDetail';
+import AboutDetails from './components/AboutDetails';
+
 
 // Global Styles
 import './App.css';
@@ -78,8 +78,9 @@ function App() {
 
           <Route path="/article/:id" element={<ArticleDetails />} />
           <Route path="/get-started" element={<GetStartedDetail />} />
-          {/* <Route path="/buy-home" element={<BuyHomeDetail />} />
-          <Route path="/sell-home" element={<SellHomeDetail />} /> */}
+
+      
+        <Route path="/about-details" element={<AboutDetails />} />
         </Routes>
 
         <FooterSection />

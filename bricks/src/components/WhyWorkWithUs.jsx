@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { FaCheck, FaHome, FaArrowRight } from 'react-icons/fa';
 import { HiOutlineUserGroup } from 'react-icons/hi';
 import { MdOutlineSecurity } from 'react-icons/md';
@@ -7,7 +8,7 @@ import familyImg from '../assets/images/324.png';
 import houseImg from '../assets/images/326.png';
 
 const WhyWorkWithUs = () => {
-  const [showMore, setShowMore] = useState(false);
+  const navigate = useNavigate(); // Hook initialize karein
 
   const features = [
     { id: 1, text: '100% Secure', icon: <MdOutlineSecurity /> },
@@ -15,6 +16,10 @@ const WhyWorkWithUs = () => {
     { id: 3, text: 'Buy or Rent Homes', icon: <FaHome /> },
     { id: 4, text: 'Trusted by Thousands', icon: <HiOutlineUserGroup /> },
   ];
+
+  const handleLearnMore = () => {
+    navigate('/about-details'); // Naye page ka path
+  };
 
   return (
     <section className="py-5" style={{ backgroundColor: '#FDF7F5', overflow: 'hidden' }}>
@@ -58,7 +63,7 @@ const WhyWorkWithUs = () => {
               Pellentesque egestas elementum egestas faucibus sem. Velit nunc egestas ut morbi. Leo diam idam.
             </p>
 
-            <div className="row g-3 mb-4">
+            <div className="row g-3 mb-5">
               {features.map((item) => (
                 <div key={item.id} className="col-md-6 d-flex align-items-center gap-2">
                   <div className="d-flex align-items-center justify-content-center rounded-circle"
@@ -71,32 +76,17 @@ const WhyWorkWithUs = () => {
               ))}
             </div>
 
-            {/* Additional Details Section */}
-            {showMore && (
-              <div className="mb-4 p-3 rounded" style={{ backgroundColor: '#fff', borderLeft: '4px solid #1A432F', animation: 'fadeIn 0.5s ease-in' }}>
-                <p className="small text-muted mb-0">
-                  Our platform provides real-time market insights, verified listings, and 24/7 legal support to ensure your property journey is smooth and stress-free. We leverage AI to match you with the perfect home based on your lifestyle and budget.
-                </p>
-              </div>
-            )}
-
             <button 
-              onClick={() => setShowMore(!showMore)}
+              onClick={handleLearnMore} // Click function
               className="btn d-inline-flex align-items-center gap-2 px-4 py-3"
               style={{ backgroundColor: '#1A432F', color: '#fff', borderRadius: '6px', fontWeight: '600', border: 'none' }}
             >
-              {showMore ? 'Show Less' : 'Learn More'} <FaArrowRight size={14} style={{ transform: showMore ? 'rotate(-90deg)' : 'rotate(0deg)', transition: '0.3s' }} />
+              Learn More <FaArrowRight size={14} />
             </button>
           </div>
 
         </div>
       </div>
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
     </section>
   );
 };
