@@ -88,11 +88,12 @@ const GetStartedDetail = () => {
                 <FaCheckCircle className="text-success me-1" /> No hidden fees • Professional Agents
               </p>
             </div>
-          </div>
+          </div> 
         </div>
       </div>
     </section>
   );
+  
 };
 
 export default GetStartedDetail;
