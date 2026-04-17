@@ -21,11 +21,11 @@ const LoginPage = () => {
             });
 
             if (response.data.success) {
-                // Token save karna zaroori hai takay dashboard pata rakh sakay aap logged in hain
-                localStorage.setItem('adminToken', response.data.token);
+               
+                localStorage.setItem('adminToken', response.data.user.id || 'true');
                 
-                // Dashboard ke raste par ravana ho jayen!
-                navigate('/admin/dashboard');
+              
+                window.location.href = "/"; 
             }
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
