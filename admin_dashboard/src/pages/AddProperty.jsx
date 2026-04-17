@@ -13,7 +13,6 @@ const AddProperty = () => {
     bedrooms: '',
     bathrooms: '',
     area: '',
-    status: 'Active'
   });
 
   const [images, setImages] = useState([]);
