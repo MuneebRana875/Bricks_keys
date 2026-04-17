@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const RegistrationForm = ({ isOpen, onClose }) => {
-  // Ye state decide karegi ke 'login' form dikhana hai ya 'signup'
+
   const [authType, setAuthType] = useState("login");
 
   if (!isOpen) return null;

@@ -15,7 +15,7 @@ const LoginPage = () => {
         setError('');
 
         try {
-            const response = await axios.post('https://your-backend-on-railway.app/api/admin/login', {
+            const response = await axios.post('https://bricks-keys.vercel.app/api/admin/login', {
                 email,
                 password
             });
