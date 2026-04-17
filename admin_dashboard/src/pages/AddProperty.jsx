@@ -312,7 +312,7 @@ const AddProperty = () => {
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
             />
           </div>
-          <div style={{ gridColumn: 'span 2' }}>
+          <div >
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               Area (sq ft)
             </label>
