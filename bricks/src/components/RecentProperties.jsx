@@ -19,7 +19,7 @@ const RecentProperties = () => {
   const [loading, setLoading] = useState(true);
 
   const API_URL = 'https://bricks-keys.vercel.app/api/properties';
-  const IMAGE_BASE_URL = 'http://localhost:5000/uploads/';
+
 
   useEffect(() => {
 
@@ -66,7 +66,7 @@ const RecentProperties = () => {
               >
                 <div className="position-relative">
                   <img 
-                  src={`${IMAGE_BASE_URL}${item.image_url}`} 
+                  src={item.image_url}
                   className="card-img-top" 
                   alt={item.title} 
                   style={{ height: '200px', objectFit: 'cover' }}
