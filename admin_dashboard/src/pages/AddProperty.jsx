@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import axios from 'axios';
 import toast from 'react-hot-toast';
 import { FaCloudUploadAlt, FaTrash, FaImage } from 'react-icons/fa';
 
@@ -78,41 +79,54 @@ const AddProperty = () => {
     toast.success(`${imageFiles.length} image(s) added`);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => { 
     e.preventDefault();
     
+    
     if (images.length === 0) {
-      toast.error('Please upload at least one image');
+      toast.error('Please upload an image');
       return;
     }
-
-    const propertyData = {
-      ...formData,
-      images: images,
-      imagePreviews: imagePreview,
-      createdAt: new Date().toISOString()
-    };
-    
-    console.log('New Property:', propertyData);
-    toast.success('Property added successfully!');
-    
-    setFormData({
-      title: '',
-      description: '',
-      category: 'For Sale',
-      brand: '',
-      price: '',
-      location: '',
-      bedrooms: '',
-      bathrooms: '',
-      area: '',
-      status: 'Active'
+  
+   
+    const loadingToast = toast.loading('Uploading property...');
+  
+   
+    const data = new FormData();
+  
+   
+    Object.keys(formData).forEach(key => {
+      data.append(key, formData[key]);
     });
-    setImages([]);
-    setImagePreview([]);
+  
     
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+    data.append('image', images[0]);
+  
+    try {
+      
+      const response = await axios.post('https://bricks-keys.vercel.app/admin/add-property', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+  
+      toast.dismiss(loadingToast);
+      toast.success('Property added successfully to database!');
+  
+     
+      setFormData({
+        title: '', description: '', category: 'For Sale',
+        brand: '', price: '', location: '',
+        bedrooms: '', bathrooms: '', area: '', status: 'Active'
+      });
+      setImages([]);
+      setImagePreview([]);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+  
+    } catch (error) {
+      toast.dismiss(loadingToast);
+      console.error('Submission Error:', error);
+      toast.error(error.response?.data?.error || 'Failed to add property');
     }
   };
 
