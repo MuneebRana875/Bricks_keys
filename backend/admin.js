@@ -5,11 +5,11 @@ const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
 
-// Cloudinary Configuration (Ye details Cloudinary dashboard se milengi)
+
 cloudinary.config({
-    cloud_name: 'your_cloud_name',
-    api_key: 'your_api_key',
-    api_secret: 'your_api_secret'
+    cloud_name: 'process.env.CLOUDINARY_CLOUD_NAME',
+    api_key: 'process.env.CLOUDINARY_API_KEY',
+    api_secret: 'process.env.CLOUDINARY_API_SECRET'
 });
 
 const storage = new CloudinaryStorage({
@@ -22,14 +22,14 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage: storage });
 
-// Update: Route ab image bhi handle karega
+
 router.post('/add-property', upload.single('image'), (req, res) => {
     const { 
         title, category, brand, price, location, 
         status, bedrooms, bathrooms, area, description 
     } = req.body;
     
-    // Image ka URL jo Cloudinary ne diya
+
     const imageUrl = req.file ? req.file.path : null; 
 
     const sql = `INSERT INTO properties 
