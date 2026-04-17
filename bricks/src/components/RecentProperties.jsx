@@ -18,7 +18,7 @@ const RecentProperties = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = 'https://bricks-keys.vercel.app//api/properties';
+  const API_URL = 'https://bricks-keys.vercel.app/api/properties';
   const IMAGE_BASE_URL = 'https://bricks-keys.vercel.app/uploads/';
 
   useEffect(() => {
