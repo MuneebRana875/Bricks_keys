@@ -7,8 +7,7 @@ const AddProperty = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: 'For Sale',
-    brand: '',
+    property_type: 'For Sale',
     price: '',
     location: '',
     bedrooms: '',
@@ -228,7 +227,7 @@ const AddProperty = () => {
           </div>
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
-              Category <span style={{ color: '#ef4444' }}></span>
+              Property Type <span style={{ color: '#ef4444' }}></span>
             </label>
             <select
               name="category"
@@ -242,19 +241,7 @@ const AddProperty = () => {
               <option value="Land">Land/Plot</option>
             </select>
           </div>
-          <div>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
-              Brand / Developer
-            </label>
-            <input
-              type="text"
-              name="brand"
-              value={formData.brand}
-              onChange={handleChange}
-              placeholder="Enter brand or developer name"
-              style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
-            />
-          </div>
+          
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               Price <span style={{ color: '#ef4444' }}></span>
@@ -283,22 +270,7 @@ const AddProperty = () => {
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
             />
           </div>
-          <div>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
-              Status
-            </label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
-            >
-              <option value="Active">Active</option>
-              <option value="Pending">Pending</option>
-              <option value="Sold">Sold</option>
-              <option value="Rented">Rented</option>
-            </select>
-          </div>
+       
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               Bedrooms

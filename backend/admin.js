@@ -26,7 +26,7 @@ const upload = multer({ storage: storage });
 
 router.post('/add-property', upload.single('image'), (req, res) => {
     const { 
-        title, category, brand, price, location, 
+        title, property_type, price, location, 
         status, bedrooms, bathrooms, area, description 
     } = req.body;
     
@@ -34,11 +34,11 @@ router.post('/add-property', upload.single('image'), (req, res) => {
     const imageUrl = req.file ? req.file.path : null; 
 
     const sql = `INSERT INTO properties 
-    (title, category, brand, price, location, status, bedrooms, bathrooms, area, description, image_url) 
+    (title, property_type, price, location, status, bedrooms, bathrooms, area, description, image_url) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     const values = [
-        title, category, brand, price, location, 
+        title, property_type, price, location, 
         status, bedrooms, bathrooms, area, description, imageUrl
     ];
 
