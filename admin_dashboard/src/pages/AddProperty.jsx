@@ -7,12 +7,13 @@ const AddProperty = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    property_type: 'For Sale',
+    category: 'For Sale',
     price: '',
     location: '',
     bedrooms: '',
     bathrooms: '',
     area_size: '',
+    status: 'Active'
   });
 
   const [images, setImages] = useState([]);
@@ -269,7 +270,22 @@ const AddProperty = () => {
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
             />
           </div>
-       
+          <div>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
+              Status
+            </label>
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
+            >
+              <option value="Active">Active</option>
+              <option value="Pending">Pending</option>
+              <option value="Sold">Sold</option>
+              <option value="Rented">Rented</option>
+            </select>
+          </div>
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               Bedrooms
