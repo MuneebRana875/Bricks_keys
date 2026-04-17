@@ -34,7 +34,7 @@ router.post('/add-property', upload.single('image'), (req, res) => {
 
     const sql = `INSERT INTO properties 
     (title, property_type, price, location, bedrooms, bathrooms, area, description, image_url) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     const values = [
         title, property_type, price, location, bedrooms, bathrooms, area, description, imageUrl
