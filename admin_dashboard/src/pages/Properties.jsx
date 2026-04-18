@@ -24,15 +24,23 @@ const Properties = () => {
   }, []);
 
   const handleDelete = async (id) => {
+   
+    if (!window.confirm("Are you sure you want to delete this property?")) return;
+
     try {
-      await axios.delete(`https://bricks-keys.vercel.app/api/properties/${id}`);
-      setProperties(properties.filter(p => p.id !== id));
+      await axios.delete(`https://bricks-keys.vercel.app/admin/properties/${id}`);
+      
+      
+      setProperties(prevProperties => 
+        prevProperties.filter(p => (p.id !== id && p._id !== id))
+      );
+      
       toast.success('Property deleted');
     } catch (error) {
-      toast.error("Failed to delete property");
+      console.error("Delete error details:", error.response);
+      toast.error(error.response?.data?.message || "Failed to delete property");
     }
   };
-
   if (loading) return <p>Loading properties...</p>;
 
   return (
