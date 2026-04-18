@@ -48,23 +48,26 @@ router.post('/add-property', upload.single('image'), (req, res) => {
     });
 });
 
-// Properties delete karne ka route
-router.delete('/properties/:id', async (req, res) => {
-  const { id } = req.params; // Frontend se bheja gaya ID yahan milega
-
-  try {
-    // Agar SQL use kar rahe hain (DBeaver/Aiven PostgreSQL)
-    const result = await db.query('DELETE FROM properties WHERE id = $1', [id]);
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ message: "Property nahi mili!" });
-    }
-
-    res.status(200).json({ message: "Property delete ho gayi" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error: Delete nahi ho paya" });
-  }
-});
+/// Properties delete karne ka route
+router.delete('/properties/:id', (req, res) => {
+    const { id } = req.params;
+  
+    // MySQL mein '?' use hota hai, '$1' nahi
+    const sql = 'DELETE FROM properties WHERE id = ?';
+  
+    db.query(sql, [id], (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Database error: Delete nahi ho paya" });
+      }
+  
+      // MySQL mein rowCount ki jagah affectedRows use hota hai
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Property nahi mili!" });
+      }
+  
+      res.status(200).json({ message: "Property delete ho gayi" });
+    });
+  });
 
 module.exports = router;
