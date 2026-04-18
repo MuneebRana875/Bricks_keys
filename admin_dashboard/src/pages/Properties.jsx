@@ -67,12 +67,12 @@ const Properties = () => {
                   <td style={{ padding: '12px' }}>{p.title}</td>
                   <td>
                     <span style={{ 
-                      background: p.type === 'For Sale' ? '#dbeafe' : '#dcfce7', 
+                      background: p.property_type === 'For Sale' ? '#dbeafe' : '#dcfce7', 
                       padding: '4px 10px', 
                       borderRadius: '20px', 
                       fontSize: '12px' 
                     }}>
-                      {p.type}
+                      {p.property_type}
                     </span>
                   </td>
                   <td>${p.price.toLocaleString()}</td>
