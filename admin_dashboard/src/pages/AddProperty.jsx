@@ -7,7 +7,7 @@ const AddProperty = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: 'For Sale',
+    property_type: 'For Sale',
     price: '',
     location: '',
     bedrooms: '',
@@ -114,7 +114,7 @@ const AddProperty = () => {
   
      
       setFormData({
-        title: '', description: '', category: 'For Sale',
+        title: '', description: '', property_type: 'For Sale',
         brand: '', price: '', location: '',
         bedrooms: '', bathrooms: '', area_size: '', status: 'Active'
       });
@@ -230,8 +230,8 @@ const AddProperty = () => {
               Property Type <span style={{ color: '#ef4444' }}></span>
             </label>
             <select
-              name="category"
-              value={formData.category}
+              name="property_type"
+              value={formData.property_type}
               onChange={handleChange}
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
             >
