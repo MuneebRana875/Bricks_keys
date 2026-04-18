@@ -39,7 +39,7 @@ router.post('/add-property', upload.single('image'), (req, res) => {
 
     const values = [
         title, property_type, price, location, 
-        status, bedrooms, bathrooms, area, description, imageUrl
+        status, bedrooms, bathrooms, area_size, description, imageUrl
     ];
 
     db.query(sql, values, (err, result) => {

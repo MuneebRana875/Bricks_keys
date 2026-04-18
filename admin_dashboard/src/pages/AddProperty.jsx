@@ -116,7 +116,7 @@ const AddProperty = () => {
       setFormData({
         title: '', description: '', category: 'For Sale',
         brand: '', price: '', location: '',
-        bedrooms: '', bathrooms: '', area: '', status: 'Active'
+        bedrooms: '', bathrooms: '', area_size: '', status: 'Active'
       });
       setImages([]);
       setImagePreview([]);
@@ -318,8 +318,8 @@ const AddProperty = () => {
             </label>
             <input
               type="text"
-              name="area"
-              value={formData.area}
+              name="area_size"
+              value={formData.area_size}
               onChange={handleChange}
               placeholder="e.g., 1200 sq ft"
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
