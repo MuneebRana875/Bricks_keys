@@ -48,11 +48,11 @@ router.post('/add-property', upload.single('image'), (req, res) => {
     });
 });
 
-/// Properties delete karne ka route
+
 router.delete('/properties/:id', (req, res) => {
     const { id } = req.params;
   
-    // MySQL mein '?' use hota hai, '$1' nahi
+
     const sql = 'DELETE FROM properties WHERE id = ?';
   
     db.query(sql, [id], (err, result) => {
@@ -61,7 +61,7 @@ router.delete('/properties/:id', (req, res) => {
         return res.status(500).json({ error: "Database error: Delete nahi ho paya" });
       }
   
-      // MySQL mein rowCount ki jagah affectedRows use hota hai
+   
       if (result.affectedRows === 0) {
         return res.status(404).json({ message: "Property nahi mili!" });
       }
