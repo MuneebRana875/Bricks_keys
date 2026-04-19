@@ -58,15 +58,15 @@ router.delete('/properties/:id', (req, res) => {
     db.query(sql, [id], (err, result) => {
       if (err) {
         console.error(err);
-        return res.status(500).json({ error: "Database error: Delete nahi ho paya" });
+        return res.status(500).json({ error: "Error: Deletion failed." });
       }
   
    
       if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Property nahi mili!" });
+        return res.status(404).json({ message: "Property not found!" });
       }
   
-      res.status(200).json({ message: "Property delete ho gayi" });
+      res.status(200).json({ message: "Property deleted successfully!" });
     });
   });
 
