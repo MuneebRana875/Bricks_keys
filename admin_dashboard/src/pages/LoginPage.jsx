@@ -2,30 +2,38 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const LoginPage = () => {
+const LoginPage = ({ setRefreshKey }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+
+    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
-
+    
         try {
             const response = await axios.post('https://bricks-keys.vercel.app/api/admin/login', {
                 email,
                 password
             });
-
+    
             if (response.data.success) {
-               
+                
                 localStorage.setItem('adminToken', response.data.user.id || 'true');
                 
-              
-                window.location.href = "/"; 
+                
+                if (setRefreshKey) {
+                    setRefreshKey(prev => prev + 1);
+                }
+                
+               
+                navigate("/", { replace: true }); 
             }
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
@@ -33,7 +41,6 @@ const LoginPage = () => {
             setLoading(false);
         }
     };
-
     return (
         <div style={styles.wrapper}>
             <div style={styles.card}>

@@ -4,6 +4,7 @@ import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Dashboard from './pages/Dashboard';
 import Properties from './pages/Properties';
+import { useState, useEffect } from 'react';
 import AddProperty from './pages/AddProperty';
 import Listings from './pages/Listings';
 import Settings from './pages/Settings';
@@ -11,7 +12,9 @@ import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
-  const isAuthenticated = localStorage.getItem('adminToken');
+ 
+ const [refreshKey, setRefreshKey] = useState(0); 
+ const isAuthenticated = !!localStorage.getItem('adminToken');
 
   return (
     <Router
@@ -21,10 +24,12 @@ function App() {
     }}
     
     >
-      <Routes>
+      <Routes key={refreshKey}>
        
-        <Route path="/admin-login" element={<LoginPage />} />
-
+      <Route 
+          path="/admin-login" 
+          element={<LoginPage setRefreshKey={setRefreshKey} />} 
+        />
        
         <Route
           path="/*"
