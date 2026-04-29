@@ -4,6 +4,7 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const path = require('path');
 const adminRoutes = require('./admin');
+const dashboardRoutes = require('./dashboard');
 const db = require('./db');
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use('/uploads', express.static('uploads'));
 app.use('/admin', adminRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 
 
