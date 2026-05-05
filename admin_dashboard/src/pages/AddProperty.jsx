@@ -1,28 +1,48 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { FaCloudUploadAlt, FaTrash, FaImage } from 'react-icons/fa';
+import { FaCloudUploadAlt, FaTrash } from 'react-icons/fa';
 
 const AddProperty = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     property_type: 'For Sale',
+    category: '',
     price: '',
     location: '',
+    city_id: '',
     bedrooms: '',
     bathrooms: '',
     area_size: '',
     status: 'Active'
   });
 
+  const [cities, setCities] = useState([]);
+  const [categories, setCategories] = useState(['Modern Villa', 'Apartments', 'Office Space', 'Townhouse']);
   const [images, setImages] = useState([]);
   const [imagePreview, setImagePreview] = useState([]);
   const fileInputRef = useRef(null);
 
+  // Fetch cities on component mount
+  useEffect(() => {
+    fetchCities();
+  }, []);
+
+  const fetchCities = async () => {
+    try {
+      const response = await axios.get('https://bricks-keys.vercel.app/admin/cities');
+      setCities(response.data);
+    } catch (error) {
+      console.error('Error fetching cities:', error);
+      toast.error('Failed to load cities');
+    }
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
     
@@ -44,11 +64,13 @@ const AddProperty = () => {
       }
     });
   };
+
   const removeImage = (index) => {
     setImages(prev => prev.filter((_, i) => i !== index));
     setImagePreview(prev => prev.filter((_, i) => i !== index));
     toast.success('Image removed');
   };
+
   const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -81,28 +103,31 @@ const AddProperty = () => {
   const handleSubmit = async (e) => { 
     e.preventDefault();
     
-    
     if (images.length === 0) {
       toast.error('Please upload an image');
       return;
     }
+
+    if (!formData.category) {
+      toast.error('Please select a category');
+      return;
+    }
+
+    if (!formData.city_id) {
+      toast.error('Please select a city');
+      return;
+    }
   
-   
     const loadingToast = toast.loading('Uploading property...');
-  
-   
     const data = new FormData();
   
-   
     Object.keys(formData).forEach(key => {
       data.append(key, formData[key]);
     });
   
-    
     data.append('image', images[0]);
   
     try {
-      
       const response = await axios.post('https://bricks-keys.vercel.app/admin/add-property', data, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -110,13 +135,14 @@ const AddProperty = () => {
       });
   
       toast.dismiss(loadingToast);
-      toast.success('Property added successfully to database!');
+      toast.success('Property added successfully!');
   
-     
+      // Reset form
       setFormData({
         title: '', description: '', property_type: 'For Sale',
-        brand: '', price: '', location: '',
-        bedrooms: '', bathrooms: '', area_size: '', status: 'Active'
+        category: '', price: '', location: '',
+        city_id: '', bedrooms: '', bathrooms: '', 
+        area_size: '', status: 'Active'
       });
       setImages([]);
       setImagePreview([]);
@@ -136,11 +162,11 @@ const AddProperty = () => {
       
       <form onSubmit={handleSubmit} style={{ background: 'white', borderRadius: '16px', padding: '28px', maxWidth: '900px' }}>
         
+        {/* Image Upload Section */}
         <div style={{ marginBottom: '28px' }}>
           <label style={{ display: 'block', fontSize: '16px', fontWeight: '600', marginBottom: '12px' }}>
-            Upload Images
+            Upload Images <span style={{ color: '#ef4444' }}>*</span>
           </label>
-          
           
           <div
             onDragOver={handleDragOver}
@@ -164,17 +190,18 @@ const AddProperty = () => {
               Drag & drop or click to upload image
             </p>
             <p style={{ fontSize: '12px', color: '#94a3b8' }}>
-              Support: JPG, PNG, WEBP (Max 5 images, 5MB each)
+              Support: JPG, PNG, JPEG (Max 5 images, 5MB each)
             </p>
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/"
+              accept="image/*"
               multiple
               onChange={handleImageUpload}
               style={{ display: 'none' }}
             />
           </div>
+          
           {imagePreview.length > 0 && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '12px', marginTop: '16px' }}>
               {imagePreview.map((preview, index) => (
@@ -210,10 +237,12 @@ const AddProperty = () => {
             </div>
           )}
         </div>
+
+        {/* Form Fields */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
-              Title <span style={{ color: '#ef4444' }}></span>
+              Title <span style={{ color: '#ef4444' }}>*</span>
             </label>
             <input
               type="text"
@@ -225,9 +254,10 @@ const AddProperty = () => {
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
             />
           </div>
+
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
-              Property Type <span style={{ color: '#ef4444' }}></span>
+              Property Type <span style={{ color: '#ef4444' }}>*</span>
             </label>
             <select
               name="property_type"
@@ -241,35 +271,78 @@ const AddProperty = () => {
               <option value="Land">Land/Plot</option>
             </select>
           </div>
-          
+
+          {/* Category Dropdown - NEW */}
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
-              Price <span style={{ color: '#ef4444' }}></span>
+              Category <span style={{ color: '#ef4444' }}>*</span>
+            </label>
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              required
+              style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
+            >
+              <option value="">Select Category</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
+              Price <span style={{ color: '#ef4444' }}>*</span>
             </label>
             <input
-              type="number"
+              type="text"
               name="price"
               value={formData.price}
               onChange={handleChange}
-              placeholder="Enter price"
+              placeholder="e.g., 500000"
               required
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
             />
           </div>
+
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
-              Location <span style={{ color: '#ef4444' }}></span>
+              Location
             </label>
             <input
               type="text"
               name="location"
               value={formData.location}
               onChange={handleChange}
-              placeholder="Enter property location"
-              required
+              placeholder="e.g., Downtown"
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
             />
           </div>
+
+          {/* City Dropdown - NEW */}
+          <div>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
+              City <span style={{ color: '#ef4444' }}>*</span>
+            </label>
+            <select
+              name="city_id"
+              value={formData.city_id}
+              onChange={handleChange}
+              required
+              style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
+            >
+              <option value="">Select City</option>
+              {cities.map((city) => (
+                <option key={city.id} value={city.id}>
+                  {city.city_name} ({city.property_count || 0} properties)
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               Status
@@ -286,6 +359,7 @@ const AddProperty = () => {
               <option value="Rented">Rented</option>
             </select>
           </div>
+
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               Bedrooms
@@ -299,6 +373,7 @@ const AddProperty = () => {
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
             />
           </div>
+
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               Bathrooms
@@ -312,22 +387,24 @@ const AddProperty = () => {
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
             />
           </div>
-          <div >
+
+          <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
-              Area (sq ft)
+              Area Size
             </label>
             <input
               type="text"
               name="area_size"
               value={formData.area_size}
               onChange={handleChange}
-              placeholder="e.g., 1200 sq ft"
+              placeholder="e.g., 2500 sq ft"
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
             />
           </div>
+
           <div style={{ gridColumn: 'span 2' }}>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
-              Description <span style={{ color: '#ef4444' }}></span>
+              Description
             </label>
             <textarea
               name="description"
@@ -335,11 +412,11 @@ const AddProperty = () => {
               value={formData.description}
               onChange={handleChange}
               placeholder="Enter property description"
-              required
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px', resize: 'vertical' }}
             ></textarea>
           </div>
         </div>
+
         <div style={{ marginTop: '28px', display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
           <button
             type="button"
