@@ -1,7 +1,31 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 function ForSale() {
+  const navigate = useNavigate();
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchSaleProperties();
+  }, []);
+
+  const fetchSaleProperties = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get('https://bricks-keys.vercel.app/admin/properties');
+      const saleProperties = response.data.properties.filter(p => p.property_type === 'For Sale');
+      setProperties(saleProperties);
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+      toast.error('Failed to load properties');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const styles = {
     container: {
       paddingTop: "100px",
@@ -37,9 +61,6 @@ function ForSale() {
       boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
       transition: "transform 0.3s ease",
       cursor: "pointer",
-      "&:hover": {
-        transform: "translateY(-5px)",
-      }
     },
     cardImage: {
       width: "100%",
@@ -83,44 +104,19 @@ function ForSale() {
       marginTop: "30px",
       textAlign: "center",
       display: "inline-block",
-    }
+    },
+    loading: {
+      textAlign: "center",
+      padding: "50px",
+      fontSize: "18px",
+      color: "#777",
+    },
+    noData: {
+      textAlign: "center",
+      padding: "50px",
+      color: "#777",
+    },
   };
-
-  const properties = [
-    {
-      id: 1,
-      title: "Modern Villa",
-      price: "$850,000",
-      location: "Beverly Hills, CA",
-      beds: 4,
-      baths: 3,
-      sqft: "2,500",
-      image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&h=400&fit=crop",
-      alt: "Modern luxury villa with swimming pool"
-    },
-    {
-      id: 2,
-      title: "Downtown Condo",
-      price: "$450,000",
-      location: "Los Angeles, CA",
-      beds: 2,
-      baths: 2,
-      sqft: "1,200",
-      image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop",
-      alt: "Modern downtown apartment with city view"
-    },
-    {
-      id: 3,
-      title: "Family Home",
-      price: "$620,000",
-      location: "San Francisco, CA",
-      beds: 3,
-      baths: 2.5,
-      sqft: "1,800",
-      image: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&h=400&fit=crop",
-      alt: "Beautiful family home with garden"
-    }
-  ];
 
   return (
     <div style={styles.container}>
@@ -129,31 +125,62 @@ function ForSale() {
         <p style={styles.subtitle}>Discover amazing homes available for purchase</p>
       </div>
       
-      <div style={styles.grid}>
-        {properties.map(property => (
-          <div key={property.id} style={styles.card}>
-            <img 
-              src={property.image} 
-              alt={property.alt}
-              style={styles.cardImage}
-            />
-            <div style={styles.cardContent}>
-              <h3 style={styles.propertyTitle}>{property.title}</h3>
-              <div style={styles.propertyPrice}>{property.price}</div>
-              <div style={styles.propertyLocation}>{property.location}</div>
-              <div style={styles.propertyDetails}>
-                <span>{property.beds} beds</span>
-                <span>{property.baths} baths</span>
-                <span>{property.sqft} sqft</span>
+      {loading ? (
+        <div style={styles.loading}>
+          <i className="fas fa-spinner fa-pulse fa-2x" style={{ color: "#2C4B40" }}></i>
+          <p className="mt-3">Loading properties...</p>
+        </div>
+      ) : properties.length === 0 ? (
+        <div style={styles.noData}>
+          <i className="fas fa-home" style={{ fontSize: "48px", opacity: 0.5, color: "#2C4B40" }}></i>
+          <p className="mt-3">No properties available for sale at the moment.</p>
+          <p>Please check back later!</p>
+        </div>
+      ) : (
+        <div style={styles.grid}>
+          {properties.map(property => (
+            <div 
+              key={property.id} 
+              style={styles.card}
+              onClick={() => navigate(`/property/${property.id}`)}
+              onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-5px)"}
+              onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
+            >
+              <img 
+                src={property.image_url || 'https://via.placeholder.com/600x400'} 
+                alt={property.title}
+                style={styles.cardImage}
+                onError={(e) => { e.target.src = 'https://via.placeholder.com/600x400'; }}
+              />
+              <div style={styles.cardContent}>
+                <h3 style={styles.propertyTitle}>{property.title}</h3>
+                <div style={styles.propertyPrice}>{property.price}</div>
+                <div style={styles.propertyLocation}>
+                  <i className="fas fa-map-marker-alt" style={{ marginRight: "5px", color: "#E6BA5F" }}></i>
+                  {property.city_name || property.location || 'Location not specified'}
+                </div>
+                <div style={styles.propertyDetails}>
+                  <span><i className="fas fa-bed"></i> {property.bedrooms || 0} beds</span>
+                  <span><i className="fas fa-bath"></i> {property.bathrooms || 0} baths</span>
+                  <span><i className="fas fa-expand-alt"></i> {property.area || 'N/A'}</span>
+                </div>
+                {property.category && (
+                  <div style={{ marginTop: "10px", fontSize: "12px", color: "#999" }}>
+                    <i className="fas fa-tag"></i> {property.category}
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
       
-      <div style={{textAlign: "center"}}>
+      <div style={{ textAlign: "center" }}>
         <Link to="/">
-          <button style={styles.backButton}>Back to Home</button>
+          <button style={styles.backButton}>
+            <i className="fas fa-arrow-left" style={{ marginRight: "8px" }}></i>
+            Back to Home
+          </button>
         </Link>
       </div>
     </div>

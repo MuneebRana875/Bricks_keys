@@ -1,7 +1,31 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 function AllProperties() {
+  const navigate = useNavigate();
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAllProperties();
+  }, []);
+
+  const fetchAllProperties = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get('https://bricks-keys.vercel.app/admin/properties');
+      setProperties(response.data.properties);
+      console.log('Properties loaded:', response.data.properties.length);
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+      toast.error('Failed to load properties');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const styles = {
     container: {
       paddingTop: "100px",
@@ -37,9 +61,6 @@ function AllProperties() {
       boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
       transition: "transform 0.3s ease",
       cursor: "pointer",
-      "&:hover": {
-        transform: "translateY(-5px)",
-      }
     },
     cardImage: {
       width: "100%",
@@ -72,6 +93,21 @@ function AllProperties() {
       fontSize: "14px",
       color: "#777777",
     },
+    propertyType: {
+      display: "inline-block",
+      padding: "4px 12px",
+      borderRadius: "20px",
+      fontSize: "12px",
+      fontWeight: "600",
+    },
+    typeForSale: {
+      backgroundColor: "#e6f4e6",
+      color: "#2d6a4f",
+    },
+    typeForRent: {
+      backgroundColor: "#fde6e6",
+      color: "#c41e1e",
+    },
     backButton: {
       backgroundColor: "#E6BA5F",
       color: "#ffffff",
@@ -83,83 +119,14 @@ function AllProperties() {
       marginTop: "30px",
       textAlign: "center",
       display: "inline-block",
-    }
+    },
+    loading: {
+      textAlign: "center",
+      padding: "50px",
+      fontSize: "18px",
+      color: "#777",
+    },
   };
-
-  const allProperties = [
-    {
-      id: 1,
-      title: "Modern Villa",
-      price: "$850,000",
-      location: "Beverly Hills, CA",
-      beds: 4,
-      baths: 3,
-      sqft: "2,500",
-      type: "For Sale",
-      image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&h=400&fit=crop",
-      alt: "Modern luxury villa with swimming pool"
-    },
-    {
-      id: 2,
-      title: "Luxury Apartment",
-      price: "$2,500/month",
-      location: "Manhattan, NY",
-      beds: 2,
-      baths: 2,
-      sqft: "1,100",
-      type: "For Rent",
-      image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop",
-      alt: "Luxury apartment with modern interior"
-    },
-    {
-      id: 3,
-      title: "Downtown Condo",
-      price: "$450,000",
-      location: "Los Angeles, CA",
-      beds: 2,
-      baths: 2,
-      sqft: "1,200",
-      type: "For Sale",
-      image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop",
-      alt: "Modern downtown apartment with city view"
-    },
-    {
-      id: 4,
-      title: "Beachfront Studio",
-      price: "$1,800/month",
-      location: "Miami, FL",
-      beds: 1,
-      baths: 1,
-      sqft: "750",
-      type: "For Rent",
-      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&h=400&fit=crop",
-      alt: "Beautiful beachfront property with ocean view"
-    },
-    {
-      id: 5,
-      title: "Family Home",
-      price: "$620,000",
-      location: "San Francisco, CA",
-      beds: 3,
-      baths: 2.5,
-      sqft: "1,800",
-      type: "For Sale",
-      image: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&h=400&fit=crop",
-      alt: "Beautiful family home with garden"
-    },
-    {
-      id: 6,
-      title: "Suburban House",
-      price: "$3,200/month",
-      location: "Austin, TX",
-      beds: 3,
-      baths: 2,
-      sqft: "2,000",
-      type: "For Rent",
-      image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&h=400&fit=crop",
-      alt: "Spacious suburban house with garden"
-    }
-  ];
 
   return (
     <div style={styles.container}>
@@ -167,31 +134,61 @@ function AllProperties() {
         <h1 style={styles.title}>All Properties</h1>
         <p style={styles.subtitle}>Browse our complete collection of properties</p>
       </div>
-      
-      <div style={styles.grid}>
-        {allProperties.map(property => (
-          <div key={property.id} style={styles.card}>
-            <img 
-              src={property.image} 
-              alt={property.alt}
-              style={styles.cardImage}
-            />
-            <div style={styles.cardContent}>
-              <h3 style={styles.propertyTitle}>{property.title}</h3>
-              <div style={styles.propertyPrice}>{property.price}</div>
-              <div style={styles.propertyLocation}>{property.location}</div>
-              <div style={styles.propertyDetails}>
-                <span>{property.beds} beds</span>
-                <span>{property.baths} baths</span>
-                <span>{property.sqft} sqft</span>
-                <span style={{color: "#E6BA5F", fontWeight: "600"}}>{property.type}</span>
+
+      {loading ? (
+        <div style={styles.loading}>Loading properties...</div>
+      ) : (
+        <div style={styles.grid}>
+          {properties.map(property => (
+            <div
+              key={property.id}
+              style={styles.card}
+              onClick={() => navigate(`/property/${property.id}`)}
+              onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-5px)"}
+              onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
+            >
+              <img
+                src={property.image_url || 'https://via.placeholder.com/600x400'}
+                alt={property.title}
+                style={styles.cardImage}
+                onError={(e) => { e.target.src = 'https://via.placeholder.com/600x400'; }}
+              />
+              <div style={styles.cardContent}>
+                <h3 style={styles.propertyTitle}>{property.title}</h3>
+                <div style={styles.propertyPrice}>{property.price}</div>
+                <div style={styles.propertyLocation}>
+                  <i className="bi bi-geo-alt-fill" style={{ marginRight: "5px", color: "#E6BA5F" }}></i>
+                  {property.city_name || property.location || 'Location not specified'}
+                </div>
+                <div style={styles.propertyDetails}>
+                  <span>{property.bedrooms || 0} beds</span>
+                  <span>{property.bathrooms || 0} baths</span>
+                  <span>{property.area || 'N/A'} sqft</span>
+                  <span style={{
+                    ...styles.propertyType,
+                    ...(property.property_type === 'For Sale' ? styles.typeForSale : styles.typeForRent)
+                  }}>
+                    {property.property_type || 'For Sale'}
+                  </span>
+                </div>
+                {property.category && (
+                  <div style={{ marginTop: "10px", fontSize: "12px", color: "#999" }}>
+                    <i className="bi bi-tag"></i> {property.category}
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-        ))}
-      </div>
-      
-      <div style={{textAlign: "center"}}>
+          ))}
+        </div>
+      )}
+
+      {!loading && properties.length === 0 && (
+        <div style={{ textAlign: "center", padding: "50px", color: "#777" }}>
+          <p>No properties found.</p>
+        </div>
+      )}
+
+      <div style={{ textAlign: "center" }}>
         <Link to="/">
           <button style={styles.backButton}>Back to Home</button>
         </Link>

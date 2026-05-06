@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom'; 
 import { FaCheck, FaHome, FaArrowRight } from 'react-icons/fa';
 import { HiOutlineUserGroup } from 'react-icons/hi';
 import { MdOutlineSecurity } from 'react-icons/md';
@@ -8,7 +8,7 @@ import familyImg from '../assets/images/324.png';
 import houseImg from '../assets/images/326.png';
 
 const WhyWorkWithUs = () => {
-  const navigate = useNavigate(); // Hook initialize karein
+  const navigate = useNavigate(); 
 
   const features = [
     { id: 1, text: '100% Secure', icon: <MdOutlineSecurity /> },
@@ -18,7 +18,7 @@ const WhyWorkWithUs = () => {
   ];
 
   const handleLearnMore = () => {
-    navigate('/about-details'); // Naye page ka path
+    navigate('/about-details'); 
   };
 
   return (
@@ -77,7 +77,7 @@ const WhyWorkWithUs = () => {
             </div>
 
             <button 
-              onClick={handleLearnMore} // Click function
+              onClick={handleLearnMore} 
               className="btn d-inline-flex align-items-center gap-2 px-4 py-3"
               style={{ backgroundColor: '#1A432F', color: '#fff', borderRadius: '6px', fontWeight: '600', border: 'none' }}
             >

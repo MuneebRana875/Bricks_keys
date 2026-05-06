@@ -1,9 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 function ListLayout() {
     const navigate = useNavigate();
+    const [properties, setProperties] = useState([]);
     const [favorites, setFavorites] = useState({});
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchAllProperties();
+    }, []);
+
+    const fetchAllProperties = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.get('https://bricks-keys.vercel.app/admin/properties');
+            setProperties(response.data.properties);
+        } catch (error) {
+            console.error('Error fetching properties:', error);
+            toast.error('Failed to load properties');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const toggleFavorite = (propertyId) => {
+        setFavorites(prevState => ({
+            ...prevState,
+            [propertyId]: !prevState[propertyId]
+        }));
+    };
 
     const styles = {
         container: {
@@ -77,6 +105,22 @@ function ListLayout() {
             fontSize: "14px",
             color: "#777777",
             marginBottom: "15px",
+            flexWrap: "wrap",
+        },
+        propertyType: {
+            display: "inline-block",
+            padding: "4px 12px",
+            borderRadius: "20px",
+            fontSize: "12px",
+            fontWeight: "600",
+        },
+        typeForSale: {
+            backgroundColor: "#e6f4e6",
+            color: "#2d6a4f",
+        },
+        typeForRent: {
+            backgroundColor: "#fde6e6",
+            color: "#c41e1e",
         },
         buttonContainer: {
             display: "flex",
@@ -121,51 +165,25 @@ function ListLayout() {
             display: "inline-block",
             transition: "all 0.3s ease",
             fontWeight: "600",
-        }
+        },
+        loading: {
+            textAlign: "center",
+            padding: "50px",
+            fontSize: "18px",
+            color: "#777",
+        },
     };
 
-    const properties = [
-        {
-            id: 1,
-            title: "Modern Villa",
-            price: "$850,000",
-            location: "Beverly Hills, CA",
-            beds: 4,
-            baths: 3,
-            sqft: "2,500",
-            image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=400&h=300&fit=crop",
-            alt: "Modern luxury villa"
-        },
-        {
-            id: 2,
-            title: "Luxury Apartment",
-            price: "$2,500/month",
-            location: "Manhattan, NY",
-            beds: 2,
-            baths: 2,
-            sqft: "1,100",
-            image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop",
-            alt: "Luxury apartment"
-        },
-        {
-            id: 3,
-            title: "Downtown Condo",
-            price: "$450,000",
-            location: "Los Angeles, CA",
-            beds: 2,
-            baths: 2,
-            sqft: "1,200",
-            image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&h=300&fit=crop",
-            alt: "Downtown condo"
-        }
-    ];
-
-    const toggleFavorite = (propertyId) => {
-        setFavorites(prevState => ({
-            ...prevState,
-            [propertyId]: !prevState[propertyId]
-        }));
-    };
+    if (loading) {
+        return (
+            <div style={styles.container}>
+                <div style={styles.loading}>
+                    <i className="fas fa-spinner fa-pulse fa-2x" style={{ color: "#2C4B40" }}></i>
+                    <p className="mt-3">Loading properties...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div style={styles.container}>
@@ -184,7 +202,8 @@ function ListLayout() {
                         e.target.style.paddingLeft = "25px";
                     }}
                 >
-                    ← Back to Home
+                    <i className="fas fa-arrow-left" style={{ marginRight: "8px" }}></i>
+                    Back to Home
                 </button>
 
                 <div style={styles.header}>
@@ -194,70 +213,118 @@ function ListLayout() {
                     <p style={styles.subtitle}>Browse properties in an easy-to-read list format</p>
                 </div>
 
-                <div style={styles.listContainer}>
-                    {properties.map((property, index) => (
-                        <div
-                            key={property.id}
-                            style={{
-                                ...styles.listItem,
-                                animationDelay: `${index * 0.1}s`
-                            }}
-                            className="list-item"
-                        >
-                            <img src={property.image} alt={property.alt} style={styles.listImage} className="list-image" />
-                            <div style={styles.listContent}>
-                                <div>
-                                    <h3 style={styles.propertyTitle}>{property.title}</h3>
-                                    <div style={styles.propertyPrice}>{property.price}</div>
-                                    <div style={styles.propertyLocation}>
-                                        <i className="bi bi-geo-alt-fill" style={{ color: "#2C4B40", marginRight: "5px" }}></i>
-                                        {property.location}
+                {properties.length === 0 ? (
+                    <div style={styles.loading}>
+                        <i className="fas fa-home" style={{ fontSize: "48px", opacity: 0.5, color: "#2C4B40" }}></i>
+                        <p className="mt-3">No properties found.</p>
+                    </div>
+                ) : (
+                    <div style={styles.listContainer}>
+                        {properties.map((property, index) => (
+                            <div
+                                key={property.id}
+                                style={{
+                                    ...styles.listItem,
+                                    animationDelay: `${index * 0.1}s`
+                                }}
+                                className="list-item"
+                            >
+                                <img
+                                    src={property.image_url || 'https://via.placeholder.com/400x300'}
+                                    alt={property.title}
+                                    style={styles.listImage}
+                                    className="list-image"
+                                    onError={(e) => { e.target.src = 'https://via.placeholder.com/400x300'; }}
+                                />
+                                <div style={styles.listContent}>
+                                    <div>
+                                        <h3 style={styles.propertyTitle}>{property.title}</h3>
+                                        <div style={styles.propertyPrice}>{property.price}</div>
+                                        <div style={styles.propertyLocation}>
+                                            <i className="fas fa-map-marker-alt" style={{ color: "#E6BA5F", marginRight: "5px" }}></i>
+                                            {property.city_name || property.location || 'Location not specified'}
+                                        </div>
+                                        <div style={styles.propertyDetails}>
+                                            <span><i className="fas fa-bed"></i> {property.bedrooms || 0} beds</span>
+                                            <span><i className="fas fa-bath"></i> {property.bathrooms || 0} baths</span>
+                                            <span><i className="fas fa-expand-alt"></i> {property.area || 'N/A'}</span>
+                                            <span style={{
+                                                ...styles.propertyType,
+                                                ...(property.property_type === 'For Sale' ? styles.typeForSale : styles.typeForRent)
+                                            }}>
+                                                {property.property_type || 'For Sale'}
+                                            </span>
+                                        </div>
+                                        {property.category && (
+                                            <div style={{ marginBottom: "10px", fontSize: "12px", color: "#999" }}>
+                                                <i className="fas fa-tag"></i> {property.category}
+                                            </div>
+                                        )}
                                     </div>
-                                    <div style={styles.propertyDetails}>
-                                        <span>{property.beds} beds</span>
-                                        <span>{property.baths} baths</span>
-                                        <span>{property.sqft} sqft</span>
-                                    </div>
-                                </div>
-                                <div style={styles.buttonContainer}>
-                                    <button
-                                        style={styles.exploreBtn}
-                                        onClick={() => navigate(`/property/${property.id}`)}
-                                    >
-                                        Explore Details
-                                    </button>
-                                    <div
-                                        style={{
-                                            ...styles.heartCircle,
-                                            ...(favorites[property.id] && {
-                                                backgroundColor: "#fff1f0",
-                                                color: "#ff4d4f",
-                                                borderColor: "#ff4d4f"
-                                            })
-                                        }}
-                                        onClick={() => toggleFavorite(property.id)}
-                                    >
-                                        <i className={`bi ${favorites[property.id] ? 'bi-heart-fill' : 'bi-heart'}`}></i>
+                                    <div style={styles.buttonContainer}>
+                                        <button
+                                            style={styles.exploreBtn}
+                                            onClick={() => navigate(`/property/${property.id}`)}
+                                            onMouseEnter={(e) => {
+                                                e.target.style.backgroundColor = "#244e44";
+                                                e.target.style.transform = "translateY(-2px)";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.target.style.backgroundColor = "#2C4B40";
+                                                e.target.style.transform = "translateY(0)";
+                                            }}
+                                        >
+                                            Explore Details
+                                        </button>
+                                        <div
+                                            style={{
+                                                ...styles.heartCircle,
+                                                ...(favorites[property.id] && {
+                                                    backgroundColor: "#fff1f0",
+                                                    color: "#ff4d4f",
+                                                    borderColor: "#ff4d4f"
+                                                })
+                                            }}
+                                            onClick={() => toggleFavorite(property.id)}
+                                            onMouseEnter={(e) => {
+                                                if (!favorites[property.id]) {
+                                                    e.currentTarget.style.background = "#fff1f0";
+                                                    e.currentTarget.style.color = "#ff4d4f";
+                                                    e.currentTarget.style.transform = "scale(1.15) rotate(15deg)";
+                                                }
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                if (!favorites[property.id]) {
+                                                    e.currentTarget.style.background = "#f9fbfb";
+                                                    e.currentTarget.style.color = "#ccd6d4";
+                                                    e.currentTarget.style.transform = "scale(1) rotate(0deg)";
+                                                }
+                                            }}
+                                        >
+                                            <i className={`${favorites[property.id] ? 'fas fa-heart' : 'far fa-heart'}`}></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             <style>{`
-        @keyframes slideInLeft {
-          from { opacity: 0; transform: translateX(-30px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        .list-item { animation: slideInLeft 0.6s ease-out both; }
-        .list-item:hover { transform: translateX(5px); box-shadow: 0 5px 20px rgba(0,0,0,0.15); }
-        .list-item:hover .list-image { transform: scale(1.05); }
-        .list-image { transition: transform 0.5s ease; }
-        .category-tag { background: #f1f8f6; color: #2C4B40; padding: 8px 20px; border-radius: 50px; font-size: 0.85rem; font-weight: 800; letter-spacing: 1px; border: 1px solid #d1e2dd; display: inline-block; margin-bottom: 15px; }
-        .heading-line { width: 60px; height: 4px; background: #2C4B40; border-radius: 10px; margin: 15px auto 0; }
-      `}</style>
+                @keyframes slideInLeft {
+                    from { opacity: 0; transform: translateX(-30px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+                .list-item { animation: slideInLeft 0.6s ease-out both; }
+                .list-item:hover { transform: translateX(5px); box-shadow: 0 5px 20px rgba(0,0,0,0.15); }
+                .list-item:hover .list-image { transform: scale(1.05); }
+                .list-image { transition: transform 0.5s ease; }
+                .category-tag { background: #f1f8f6; color: #2C4B40; padding: 8px 20px; border-radius: 50px; font-size: 0.85rem; font-weight: 800; letter-spacing: 1px; border: 1px solid #d1e2dd; display: inline-block; margin-bottom: 15px; }
+                .heading-line { width: 60px; height: 4px; background: #2C4B40; border-radius: 10px; margin: 15px auto 0; }
+                .explore-btn { transition: all 0.3s ease; }
+                .heart-circle { transition: all 0.3s ease; }
+            `}</style>
         </div>
     );
 }
