@@ -20,12 +20,11 @@ const AddProperty = () => {
 
   const [cities, setCities] = useState([]);
   const [loadingCities, setLoadingCities] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [categories] = useState(['Modern Villa', 'Apartments', 'Office Space', 'Townhouse']);
   const [images, setImages] = useState([]);
   const [imagePreview, setImagePreview] = useState([]);
   const fileInputRef = useRef(null);
-
-  // Hardcoded cities (temporary fix)
   const hardcodedCities = [
     { id: 1, city_name: 'New York', property_count: 0 },
     { id: 2, city_name: 'San Diego', property_count: 0 },
@@ -37,8 +36,6 @@ const AddProperty = () => {
     { id: 8, city_name: 'Chicago', property_count: 0 },
     { id: 9, city_name: 'Washington', property_count: 0 }
   ];
-
-  // Fetch cities on component mount
   useEffect(() => {
     fetchCities();
   }, []);
@@ -49,18 +46,18 @@ const AddProperty = () => {
       console.log('Fetching cities from API...');
       const response = await axios.get('https://bricks-keys.vercel.app/admin/cities');
       console.log('API Response:', response.data);
-      
+
       if (response.data && response.data.length > 0) {
         setCities(response.data);
+        toast.success(`${response.data.length} cities loaded`);
       } else {
-        // Use hardcoded cities if API returns empty
         console.log('Using hardcoded cities');
         setCities(hardcodedCities);
         toast.success('Using default cities list');
       }
     } catch (error) {
       console.error('Error fetching cities:', error);
-      // Use hardcoded cities on error
+      console.error('Error details:', error.response?.data);
       setCities(hardcodedCities);
       toast.error('Failed to load cities from server. Using default cities.');
     } finally {
@@ -74,7 +71,7 @@ const AddProperty = () => {
 
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
-    
+
     if (images.length + files.length > 5) {
       toast.error('You can only upload up to 5 images');
       return;
@@ -108,10 +105,10 @@ const AddProperty = () => {
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     const files = Array.from(e.dataTransfer.files);
     const imageFiles = files.filter(file => file.type.startsWith('image/'));
-    
+
     if (images.length + imageFiles.length > 5) {
       toast.error('You can only upload up to 5 images');
       return;
@@ -125,15 +122,19 @@ const AddProperty = () => {
       };
       reader.readAsDataURL(file);
     });
-    
+
     toast.success(`${imageFiles.length} image(s) added`);
   };
 
-  const handleSubmit = async (e) => { 
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (images.length === 0) {
-      toast.error('Please upload an image');
+      toast.error('Please upload at least one image');
+      return;
+    }
+
+    if (!formData.title.trim()) {
+      toast.error('Please enter property title');
       return;
     }
 
@@ -146,57 +147,73 @@ const AddProperty = () => {
       toast.error('Please select a city');
       return;
     }
-  
+
+    if (!formData.price) {
+      toast.error('Please enter price');
+      return;
+    }
+
+    setSubmitting(true);
     const loadingToast = toast.loading('Uploading property...');
     const data = new FormData();
-  
     Object.keys(formData).forEach(key => {
-      data.append(key, formData[key]);
+      if (formData[key]) {
+        data.append(key, formData[key]);
+      }
     });
-  
     data.append('image', images[0]);
-  
+
     try {
       const response = await axios.post('https://bricks-keys.vercel.app/admin/add-property', data, {
         headers: {
           'Content-Type': 'multipart/form-data'
-        }
+        },
+        timeout: 30000 // 30 seconds timeout
       });
-  
+
       toast.dismiss(loadingToast);
       toast.success('Property added successfully!');
-  
-      // Reset form
+      console.log('Server response:', response.data);
       setFormData({
         title: '', description: '', property_type: 'For Sale',
         category: '', price: '', location: '',
-        city_id: '', bedrooms: '', bathrooms: '', 
+        city_id: '', bedrooms: '', bathrooms: '',
         area_size: '', status: 'Active'
       });
       setImages([]);
       setImagePreview([]);
       if (fileInputRef.current) fileInputRef.current.value = '';
-  
+
     } catch (error) {
       toast.dismiss(loadingToast);
       console.error('Submission Error:', error);
-      toast.error(error.response?.data?.error || 'Failed to add property');
+
+      if (error.code === 'ECONNABORTED') {
+        toast.error('Request timeout. Please try again.');
+      } else if (error.response) {
+        console.error('Error response:', error.response.data);
+        toast.error(error.response.data?.error || 'Server error. Please try again.');
+      } else if (error.request) {
+        toast.error('No response from server. Please check your connection.');
+      } else {
+        toast.error(error.message || 'Failed to add property');
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
   return (
-    <div>
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
       <h1 style={{ fontSize: '26px', fontWeight: 'bold', marginBottom: '8px' }}>Add New Property</h1>
       <p style={{ color: '#64748b', marginBottom: '24px' }}>Fill in the details to list a new property</p>
-      
-      <form onSubmit={handleSubmit} style={{ background: 'white', borderRadius: '16px', padding: '28px', maxWidth: '900px' }}>
-        
-        {/* Image Upload Section */}
+
+      <form onSubmit={handleSubmit} style={{ background: 'white', borderRadius: '16px', padding: '28px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
         <div style={{ marginBottom: '28px' }}>
           <label style={{ display: 'block', fontSize: '16px', fontWeight: '600', marginBottom: '12px' }}>
             Upload Images <span style={{ color: '#ef4444' }}>*</span>
           </label>
-          
+
           <div
             onDragOver={handleDragOver}
             onDrop={handleDrop}
@@ -230,14 +247,14 @@ const AddProperty = () => {
               style={{ display: 'none' }}
             />
           </div>
-          
+
           {imagePreview.length > 0 && (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '12px', marginTop: '16px' }}>
               {imagePreview.map((preview, index) => (
                 <div key={index} style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-                  <img 
-                    src={preview} 
-                    alt={`Preview ${index + 1}`} 
+                  <img
+                    src={preview}
+                    alt={`Preview ${index + 1}`}
                     style={{ width: '100%', height: '100px', objectFit: 'cover' }}
                   />
                   <button
@@ -266,8 +283,6 @@ const AddProperty = () => {
             </div>
           )}
         </div>
-
-        {/* Form Fields */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
@@ -283,7 +298,6 @@ const AddProperty = () => {
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
             />
           </div>
-
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               Property Type <span style={{ color: '#ef4444' }}>*</span>
@@ -300,8 +314,6 @@ const AddProperty = () => {
               <option value="Land">Land/Plot</option>
             </select>
           </div>
-
-          {/* Category Dropdown */}
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               Category <span style={{ color: '#ef4444' }}>*</span>
@@ -321,7 +333,6 @@ const AddProperty = () => {
               ))}
             </select>
           </div>
-
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               Price <span style={{ color: '#ef4444' }}>*</span>
@@ -336,7 +347,6 @@ const AddProperty = () => {
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
             />
           </div>
-
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               Location
@@ -350,8 +360,6 @@ const AddProperty = () => {
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
             />
           </div>
-
-          {/* City Dropdown */}
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               City <span style={{ color: '#ef4444' }}>*</span>
@@ -369,7 +377,7 @@ const AddProperty = () => {
               ) : (
                 cities.map((city) => (
                   <option key={city.id} value={city.id}>
-                    {city.city_name}
+                    {city.city_name} {city.property_count !== undefined ? `(${city.property_count} properties)` : ''}
                   </option>
                 ))
               )}
@@ -380,7 +388,6 @@ const AddProperty = () => {
               </p>
             )}
           </div>
-
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               Status
@@ -397,7 +404,6 @@ const AddProperty = () => {
               <option value="Rented">Rented</option>
             </select>
           </div>
-
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               Bedrooms
@@ -411,7 +417,6 @@ const AddProperty = () => {
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
             />
           </div>
-
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               Bathrooms
@@ -425,7 +430,6 @@ const AddProperty = () => {
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
             />
           </div>
-
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               Area Size
@@ -439,7 +443,6 @@ const AddProperty = () => {
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
             />
           </div>
-
           <div style={{ gridColumn: 'span 2' }}>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               Description
@@ -454,16 +457,15 @@ const AddProperty = () => {
             ></textarea>
           </div>
         </div>
-
         <div style={{ marginTop: '28px', display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
           <button
             type="button"
             onClick={() => window.history.back()}
-            style={{ 
-              background: 'white', 
-              border: '1px solid #cbd5e1', 
-              padding: '10px 24px', 
-              borderRadius: '8px', 
+            style={{
+              background: 'white',
+              border: '1px solid #cbd5e1',
+              padding: '10px 24px',
+              borderRadius: '8px',
               cursor: 'pointer',
               fontSize: '14px',
               fontWeight: '500'
@@ -473,18 +475,20 @@ const AddProperty = () => {
           </button>
           <button
             type="submit"
-            style={{ 
-              background: '#c9a03d', 
-              color: '#0f2b3d', 
-              padding: '10px 28px', 
-              border: 'none', 
-              borderRadius: '8px', 
-              fontWeight: '600', 
-              cursor: 'pointer',
-              fontSize: '14px'
+            disabled={submitting}
+            style={{
+              background: '#c9a03d',
+              color: '#0f2b3d',
+              padding: '10px 28px',
+              border: 'none',
+              borderRadius: '8px',
+              fontWeight: '600',
+              cursor: submitting ? 'not-allowed' : 'pointer',
+              fontSize: '14px',
+              opacity: submitting ? 0.7 : 1
             }}
           >
-            Add Property
+            {submitting ? 'Adding Property...' : 'Add Property'}
           </button>
         </div>
       </form>
