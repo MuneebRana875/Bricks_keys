@@ -6,6 +6,7 @@ const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
 
+
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
@@ -21,175 +22,55 @@ const storage = new CloudinaryStorage({
 });
 
 const upload = multer({ storage: storage });
-router.get('/cities', (req, res) => {
-    const sql = `
-        SELECT 
-            c.id,
-            c.city_name,
-            c.city_slug,
-            COUNT(p.id) as property_count
-        FROM cities c
-        LEFT JOIN properties p ON c.id = p.city_id
-        GROUP BY c.id
-        ORDER BY c.city_name
-    `;
-    
-    db.query(sql, (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: err.message });
-        }
-        res.status(200).json(results);
-    });
-});
-
-router.get('/categories', (req, res) => {
-    const categories = ['Modern Villa', 'Apartments', 'Office Space', 'Townhouse'];
-    res.status(200).json(categories);
-});
 
 router.post('/add-property', upload.single('image'), (req, res) => {
     const { 
-        title, 
-        property_type, 
-        category, 
-        price, 
-        location, 
-        status, 
-        bedrooms, 
-        bathrooms, 
-        area_size, 
-        description, 
-        city_id 
+        title, property_type, price, location, 
+        status, bedrooms, bathrooms, area_size, description 
     } = req.body;
     
-    const imageUrl = req.file ? req.file.path : null;
-    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    const priceValue = parseFloat(price.toString().replace(/[^0-9.-]/g, ''));
-    if (!title || !property_type || !price || !city_id) {
-        return res.status(400).json({ 
-            error: "Missing required fields: title, property_type, price, and city_id are required" 
-        });
-    }
+
+    const imageUrl = req.file ? req.file.path : null; 
 
     const sql = `INSERT INTO properties 
-    (title, property_type, category, price, price_value, location, 
-     status, bedrooms, bathrooms, area, description, image_url, city_id, slug) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    (title, property_type, price, location, status, bedrooms, bathrooms, area_size, description, image_url) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     const values = [
-        title, 
-        property_type, 
-        category || null, 
-        price, 
-        priceValue,
-        location || null, 
-        status || 'Active', 
-        bedrooms || 0, 
-        bathrooms || 0, 
-        area_size || null, 
-        description || null, 
-        imageUrl, 
-        city_id,
-        slug
+        title, property_type, price, location, 
+        status, bedrooms, bathrooms, area_size, description, imageUrl
     ];
 
     db.query(sql, values, (err, result) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: err.message });
-        }
-        
-        const updateCountSql = `
-            UPDATE cities c
-            SET property_count = (
-                SELECT COUNT(*) FROM properties p 
-                WHERE p.city_id = c.id
-            )
-            WHERE c.id = ?
-        `;
-        db.query(updateCountSql, [city_id]);
-        
-        res.status(200).json({ 
-            success: true,
-            message: "Property added successfully!", 
-            id: result.insertId 
-        });
+        if (err) return res.status(500).json({ error: err.message });
+        res.status(200).json({ message: "Property with Image Added!", id: result.insertId });
     });
 });
 
-router.get('/properties', (req, res) => {
-    const { city, category } = req.query;
-    
-    let sql = `
-        SELECT p.*, c.city_name 
-        FROM properties p 
-        LEFT JOIN cities c ON p.city_id = c.id
-        WHERE 1=1
-    `;
-    const values = [];
-    
-    if (city && city !== 'all') {
-        sql += ' AND p.city_id = ?';
-        values.push(city);
-    }
-    
-    if (category && category !== 'all') {
-        sql += ' AND p.category = ?';
-        values.push(category);
-    }
-    
-    sql += ' ORDER BY p.created_at DESC';
-    
-    db.query(sql, values, (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: err.message });
-        }
-        
-        res.status(200).json({
-            success: true,
-            count: results.length,
-            properties: results
-        });
+router.delete('/properties/:id', (req, res) => {
+    const { id } = req.params;
+  
+
+    const sql = 'DELETE FROM properties WHERE id = ?';
+  
+    db.query(sql, [id], (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Error: Deletion failed." });
+      }
+  
+   
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Property not found!" });
+      }
+  
+      res.status(200).json({ message: "Property deleted successfully!" });
     });
 });
-
-router.get('/cities/:citySlug/properties', (req, res) => {
-    const { citySlug } = req.params;
-    
-    const sql = `
-        SELECT p.*, c.city_name 
-        FROM properties p 
-        INNER JOIN cities c ON p.city_id = c.id 
-        WHERE c.city_slug = ?
-        ORDER BY p.created_at DESC
-    `;
-    
-    db.query(sql, [citySlug], (err, results) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: err.message });
-        }
-        
-        res.status(200).json({
-            success: true,
-            city: citySlug,
-            count: results.length,
-            properties: results
-        });
-    });
-});
-
 router.get('/properties/:id', (req, res) => {
     const { id } = req.params;
     
-    const sql = `
-        SELECT p.*, c.city_name 
-        FROM properties p 
-        LEFT JOIN cities c ON p.city_id = c.id 
-        WHERE p.id = ?
-    `;
+    const sql = 'SELECT * FROM properties WHERE id = ?';
     
     db.query(sql, [id], (err, result) => {
         if (err) {
@@ -204,40 +85,31 @@ router.get('/properties/:id', (req, res) => {
         res.status(200).json(result[0]);
     });
 });
-
 router.put('/properties/:id', upload.single('image'), (req, res) => {
     const { id } = req.params;
     const { 
-        title, property_type, category, price, location, 
-        status, bedrooms, bathrooms, area_size, description, city_id
+        title, property_type, price, location, 
+        status, bedrooms, bathrooms, area_size, description 
     } = req.body;
     const imageUrl = req.file ? req.file.path : null;
-    const priceValue = parseFloat(price.toString().replace(/[^0-9.-]/g, ''));
-    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    
     if (imageUrl) {
         const sql = `UPDATE properties SET 
             title = ?, 
             property_type = ?, 
-            category = ?,
-            price = ?,
-            price_value = ?,
+            price = ?, 
             location = ?, 
             status = ?, 
             bedrooms = ?, 
             bathrooms = ?, 
-            area = ?, 
+            area_size = ?, 
             description = ?, 
-            image_url = ?,
-            city_id = ?,
-            slug = ?
+            image_url = ? 
             WHERE id = ?`;
         
         const values = [
-            title, property_type, category, price, priceValue, location, 
-            status, bedrooms, bathrooms, area_size, description, imageUrl, city_id, slug, id
+            title, property_type, price, location, 
+            status, bedrooms, bathrooms, area_size, description, imageUrl, id
         ];
-        
         db.query(sql, values, (err, result) => {
             if (err) {
                 console.error(err);
@@ -258,24 +130,18 @@ router.put('/properties/:id', upload.single('image'), (req, res) => {
         const sql = `UPDATE properties SET 
             title = ?, 
             property_type = ?, 
-            category = ?,
-            price = ?,
-            price_value = ?,
+            price = ?, 
             location = ?, 
             status = ?, 
             bedrooms = ?, 
             bathrooms = ?, 
-            area = ?, 
-            description = ?,
-            city_id = ?,
-            slug = ?
+            area_size = ?, 
+            description = ? 
             WHERE id = ?`;
-        
         const values = [
-            title, property_type, category, price, priceValue, location, 
-            status, bedrooms, bathrooms, area_size, description, city_id, slug, id
+            title, property_type, price, location, 
+            status, bedrooms, bathrooms, area_size, description, id
         ];
-        
         db.query(sql, values, (err, result) => {
             if (err) {
                 console.error(err);
@@ -293,47 +159,4 @@ router.put('/properties/:id', upload.single('image'), (req, res) => {
         });
     }
 });
-
-router.delete('/properties/:id', (req, res) => {
-    const { id } = req.params;
-    
-
-    const getCitySql = 'SELECT city_id FROM properties WHERE id = ?';
-    db.query(getCitySql, [id], (err, result) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: err.message });
-        }
-        
-        const cityId = result[0]?.city_id;
-        
-        const deleteSql = 'DELETE FROM properties WHERE id = ?';
-        db.query(deleteSql, [id], (err, deleteResult) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: "Error: Deletion failed." });
-            }
-        
-            if (deleteResult.affectedRows === 0) {
-                return res.status(404).json({ message: "Property not found!" });
-            }
-            
-
-            if (cityId) {
-                const updateCountSql = `
-                    UPDATE cities c
-                    SET property_count = (
-                        SELECT COUNT(*) FROM properties p 
-                        WHERE p.city_id = c.id
-                    )
-                    WHERE c.id = ?
-                `;
-                db.query(updateCountSql, [cityId]);
-            }
-            
-            res.status(200).json({ message: "Property deleted successfully!" });
-        });
-    });
-});
-
 module.exports = router;
