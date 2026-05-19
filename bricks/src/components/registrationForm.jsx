@@ -11,13 +11,12 @@ const RegistrationForm = ({ isOpen, onClose }) => {
       <div style={modalStyles.content} onClick={(e) => e.stopPropagation()}>
         <button onClick={onClose} style={modalStyles.closeBtn}>&times;</button>
         
-        {/* Title change hoga authType ke mutabiq */}
         <h3 style={{ color: "#2C4B40", marginBottom: "20px" }}>
           {authType === "login" ? "Login" : "Create Account"}
         </h3>
 
         <form style={modalStyles.form}>
-          {/* Agar signup hai to Name field bhi dikhao */}
+         
           {authType === "signup" && (
             <input type="text" placeholder="Full Name" style={modalStyles.input} />
           )}

@@ -235,4 +235,4 @@ const CategoryDetails = () => {
   );
 };
 
-export default CategoryDetails;
+export default CategoryDetails; 

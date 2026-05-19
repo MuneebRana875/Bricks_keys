@@ -10,8 +10,6 @@ import {
 } from 'react-icons/fa';
 
 
-
-
 const RecentProperties = () => {
   
   const [activeIndex, setActiveIndex] = useState(0);
@@ -58,7 +56,7 @@ const RecentProperties = () => {
                   overflow: 'hidden',
                   cursor: 'pointer',
                   transition: 'all 0.4s ease',
-                  // --- Static Position Highlight Logic ---
+                  
                   outline: index === activeIndex ? '2px solid #1A1A1A' : 'none', 
                   transform: index === activeIndex ? 'translateY(-10px)' : 'none',
                   boxShadow: index === activeIndex ? '0 10px 20px rgba(0,0,0,0.1)' : 'none'
@@ -103,7 +101,7 @@ const RecentProperties = () => {
           ))}
         </div>
 
-        {/* Dots Section - Click to Change Highlight */}
+        
         <div className="mt-5 d-flex justify-content-center gap-2 align-items-center">
           {properties.map((_, index) => (
             <div key={index} onClick={() => setActiveIndex(index)} style={{ cursor: 'pointer' }}>
