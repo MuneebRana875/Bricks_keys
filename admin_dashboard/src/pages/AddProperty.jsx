@@ -19,24 +19,10 @@ const AddProperty = () => {
   });
 
   const [cities, setCities] = useState([]);
-  const [loadingCities, setLoadingCities] = useState(true);
-  const [categories] = useState(['Modern Villa', 'Apartments', 'Office Space', 'Townhouse']);
+  const [categories, setCategories] = useState(['Modern Villa', 'Apartments', 'Office Space', 'Townhouse']);
   const [images, setImages] = useState([]);
   const [imagePreview, setImagePreview] = useState([]);
   const fileInputRef = useRef(null);
-
-  // Hardcoded cities (temporary fix)
-  const hardcodedCities = [
-    { id: 1, city_name: 'New York', property_count: 0 },
-    { id: 2, city_name: 'San Diego', property_count: 0 },
-    { id: 3, city_name: 'Arizona', property_count: 0 },
-    { id: 4, city_name: 'Miami', property_count: 0 },
-    { id: 5, city_name: 'Los Angeles', property_count: 0 },
-    { id: 6, city_name: 'Hawaii', property_count: 0 },
-    { id: 7, city_name: 'Florida', property_count: 0 },
-    { id: 8, city_name: 'Chicago', property_count: 0 },
-    { id: 9, city_name: 'Washington', property_count: 0 }
-  ];
 
   // Fetch cities on component mount
   useEffect(() => {
@@ -44,27 +30,12 @@ const AddProperty = () => {
   }, []);
 
   const fetchCities = async () => {
-    setLoadingCities(true);
     try {
-      console.log('Fetching cities from API...');
       const response = await axios.get('https://bricks-keys.vercel.app/admin/cities');
-      console.log('API Response:', response.data);
-      
-      if (response.data && response.data.length > 0) {
-        setCities(response.data);
-      } else {
-        // Use hardcoded cities if API returns empty
-        console.log('Using hardcoded cities');
-        setCities(hardcodedCities);
-        toast.success('Using default cities list');
-      }
+      setCities(response.data);
     } catch (error) {
       console.error('Error fetching cities:', error);
-      // Use hardcoded cities on error
-      setCities(hardcodedCities);
-      toast.error('Failed to load cities from server. Using default cities.');
-    } finally {
-      setLoadingCities(false);
+      toast.error('Failed to load cities');
     }
   };
 
@@ -301,7 +272,7 @@ const AddProperty = () => {
             </select>
           </div>
 
-          {/* Category Dropdown */}
+          {/* Category Dropdown - NEW */}
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               Category <span style={{ color: '#ef4444' }}>*</span>
@@ -351,7 +322,7 @@ const AddProperty = () => {
             />
           </div>
 
-          {/* City Dropdown */}
+          {/* City Dropdown - NEW */}
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '6px' }}>
               City <span style={{ color: '#ef4444' }}>*</span>
@@ -364,21 +335,12 @@ const AddProperty = () => {
               style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px', fontSize: '14px' }}
             >
               <option value="">Select City</option>
-              {loadingCities ? (
-                <option disabled>Loading cities...</option>
-              ) : (
-                cities.map((city) => (
-                  <option key={city.id} value={city.id}>
-                    {city.city_name}
-                  </option>
-                ))
-              )}
+              {cities.map((city) => (
+                <option key={city.id} value={city.id}>
+                  {city.city_name} ({city.property_count || 0} properties)
+                </option>
+              ))}
             </select>
-            {!loadingCities && cities.length === 0 && (
-              <p style={{ color: 'red', fontSize: '12px', marginTop: '5px' }}>
-                No cities available. Please contact admin.
-              </p>
-            )}
           </div>
 
           <div>
