@@ -1,12 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 function ForRent() {
+  const [rentals, setRentals] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRentals = async () => {
+      try {
+        const res = await axios.get('https://bricks-keys.vercel.app/api/properties?category=for-rent');
+        setRentals(res.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching rentals:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchRentals();
+  }, []);
+
   const styles = {
     container: {
       paddingTop: "100px",
       minHeight: "100vh",
       backgroundColor: "#f8f9fa",
+      paddingBottom: "50px"
     },
     header: {
       textAlign: "center",
@@ -37,13 +57,12 @@ function ForRent() {
       boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
       transition: "transform 0.3s ease",
       cursor: "pointer",
-      "&:hover": {
-        transform: "translateY(-5px)",
-      }
+      textDecoration: "none",
+      color: "inherit"
     },
     cardImage: {
       width: "100%",
-      height: "250px",
+      height: "200px",
       objectFit: "cover",
     },
     cardContent: {
@@ -56,71 +75,35 @@ function ForRent() {
       marginBottom: "10px",
     },
     propertyPrice: {
-      fontSize: "24px",
+      fontSize: "18px",
       fontWeight: "700",
       color: "#E6BA5F",
-      marginBottom: "10px",
+      marginBottom: "8px",
     },
     propertyLocation: {
-      color: "#777777",
+      color: "#666",
       fontSize: "14px",
       marginBottom: "15px",
     },
     propertyDetails: {
       display: "flex",
-      gap: "15px",
+      justifyContent: "space-between",
+      paddingTop: "15px",
+      borderTop: "1px solid #eee",
       fontSize: "14px",
-      color: "#777777",
-    },
-    backButton: {
-      backgroundColor: "#E6BA5F",
-      color: "#ffffff",
-      border: "none",
-      padding: "10px 25px",
-      borderRadius: "25px",
-      cursor: "pointer",
-      fontSize: "14px",
-      marginTop: "30px",
-      textAlign: "center",
-      display: "inline-block",
+      color: "#888",
     }
   };
 
-  const rentals = [
-    {
-      id: 1,
-      title: "Luxury Apartment",
-      price: "$2,500/month",
-      location: "Manhattan, NY",
-      beds: 2,
-      baths: 2,
-      sqft: "1,100",
-      image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop",
-      alt: "Luxury apartment with modern interior"
-    },
-    {
-      id: 2,
-      title: "Beachfront Studio",
-      price: "$1,800/month",
-      location: "Miami, FL",
-      beds: 1,
-      baths: 1,
-      sqft: "750",
-      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&h=400&fit=crop",
-      alt: "Beautiful beachfront property with ocean view"
-    },
-    {
-      id: 3,
-      title: "Suburban House",
-      price: "$3,200/month",
-      location: "Austin, TX",
-      beds: 3,
-      baths: 2,
-      sqft: "2,000",
-      image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&h=400&fit=crop",
-      alt: "Spacious suburban house with garden"
-    }
-  ];
+  if (loading) {
+    return (
+      <div style={{ ...styles.container, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div className="spinner-border text-success" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={styles.container}>
@@ -129,31 +112,46 @@ function ForRent() {
         <p style={styles.subtitle}>Find your perfect rental home today</p>
       </div>
       
-      <div style={styles.grid}>
-        {rentals.map(property => (
-          <div key={property.id} style={styles.card}>
-            <img 
-              src={property.image} 
-              alt={property.alt}
-              style={styles.cardImage}
-            />
-            <div style={styles.cardContent}>
-              <h3 style={styles.propertyTitle}>{property.title}</h3>
-              <div style={styles.propertyPrice}>{property.price}</div>
-              <div style={styles.propertyLocation}>{property.location}</div>
-              <div style={styles.propertyDetails}>
-                <span>{property.beds} beds</span>
-                <span>{property.baths} baths</span>
-                <span>{property.sqft} sqft</span>
+      {rentals.length > 0 ? (
+        <div style={styles.grid}>
+          {rentals.map(property => (
+            <Link 
+              key={property.id} 
+              to={`/properties/detail/${property.id}`} 
+              style={styles.card}
+              onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-5px)"}
+              onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
+            >
+              <img 
+                src={property.image_url || property.image} 
+                alt={property.title}
+                style={styles.cardImage}
+              />
+              <div style={styles.cardContent}>
+                <h3 style={styles.propertyTitle}>{property.title}</h3>
+                <div style={styles.propertyPrice}>{property.price}</div>
+                <div style={styles.propertyLocation}>
+                  <i className="bi bi-geo-alt me-1"></i>{property.location}
+                </div>
+                <div style={styles.propertyDetails}>
+                  <span><i className="bi bi-door-open me-1"></i>{property.bedrooms} beds</span>
+                  <span><i className="bi bi-droplet me-1"></i>{property.bathrooms} baths</span>
+                  <span><i className="bi bi-aspect-ratio me-1"></i>{property.area_size || property.sqft}</span>
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
-      </div>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <div style={{ textAlign: 'center', padding: '50px' }}>
+          <h3 className="text-muted">No rental properties found.</h3>
+          <Link to="/" className="btn btn-success mt-3">Go Back Home</Link>
+        </div>
+      )}
       
-      <div style={{textAlign: "center"}}>
-        <Link to="/">
-          <button style={styles.backButton}>Back to Home</button>
+      <div style={{ textAlign: "center", marginTop: "40px" }}>
+        <Link to="/" style={{ color: "#2C4B40", fontWeight: "600", textDecoration: "none" }}>
+          ← Back to Home
         </Link>
       </div>
     </div>

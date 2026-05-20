@@ -1,12 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 function AllProperties() {
+  const [allProperties, setAllProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAllProperties = async () => {
+      try {
+        // API se sab properties fetch karna
+        const res = await axios.get('https://bricks-keys.vercel.app/api/properties');
+        setAllProperties(res.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching all properties:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchAllProperties();
+    window.scrollTo(0, 0); // Page ke start par scroll karne ke liye
+  }, []);
+
   const styles = {
     container: {
       paddingTop: "100px",
       minHeight: "100vh",
       backgroundColor: "#f8f9fa",
+      paddingBottom: "50px"
     },
     header: {
       textAlign: "center",
@@ -37,129 +59,68 @@ function AllProperties() {
       boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
       transition: "transform 0.3s ease",
       cursor: "pointer",
-      "&:hover": {
-        transform: "translateY(-5px)",
-      }
+      textDecoration: "none",
+      color: "inherit",
+      display: "block"
     },
     cardImage: {
       width: "100%",
-      height: "250px",
+      height: "220px",
       objectFit: "cover",
     },
     cardContent: {
       padding: "20px",
     },
     propertyTitle: {
-      fontSize: "20px",
+      fontSize: "19px",
       fontWeight: "600",
       color: "#2C4B40",
-      marginBottom: "10px",
+      marginBottom: "8px",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis"
     },
     propertyPrice: {
-      fontSize: "24px",
+      fontSize: "18px",
       fontWeight: "700",
       color: "#E6BA5F",
-      marginBottom: "10px",
+      marginBottom: "8px",
     },
     propertyLocation: {
-      color: "#777777",
+      color: "#666",
       fontSize: "14px",
       marginBottom: "15px",
     },
     propertyDetails: {
       display: "flex",
-      gap: "15px",
-      fontSize: "14px",
-      color: "#777777",
+      justifyContent: "space-between",
+      paddingTop: "15px",
+      borderTop: "1px solid #eee",
+      fontSize: "13px",
+      color: "#888",
     },
-    backButton: {
-      backgroundColor: "#E6BA5F",
-      color: "#ffffff",
-      border: "none",
-      padding: "10px 25px",
-      borderRadius: "25px",
-      cursor: "pointer",
-      fontSize: "14px",
-      marginTop: "30px",
-      textAlign: "center",
-      display: "inline-block",
+    badge: {
+      position: "absolute",
+      top: "10px",
+      right: "10px",
+      backgroundColor: "#2C4B40",
+      color: "white",
+      padding: "5px 12px",
+      borderRadius: "20px",
+      fontSize: "12px",
+      fontWeight: "600"
     }
   };
 
-  const allProperties = [
-    {
-      id: 1,
-      title: "Modern Villa",
-      price: "$850,000",
-      location: "Beverly Hills, CA",
-      beds: 4,
-      baths: 3,
-      sqft: "2,500",
-      type: "For Sale",
-      image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&h=400&fit=crop",
-      alt: "Modern luxury villa with swimming pool"
-    },
-    {
-      id: 2,
-      title: "Luxury Apartment",
-      price: "$2,500/month",
-      location: "Manhattan, NY",
-      beds: 2,
-      baths: 2,
-      sqft: "1,100",
-      type: "For Rent",
-      image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=600&h=400&fit=crop",
-      alt: "Luxury apartment with modern interior"
-    },
-    {
-      id: 3,
-      title: "Downtown Condo",
-      price: "$450,000",
-      location: "Los Angeles, CA",
-      beds: 2,
-      baths: 2,
-      sqft: "1,200",
-      type: "For Sale",
-      image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&h=400&fit=crop",
-      alt: "Modern downtown apartment with city view"
-    },
-    {
-      id: 4,
-      title: "Beachfront Studio",
-      price: "$1,800/month",
-      location: "Miami, FL",
-      beds: 1,
-      baths: 1,
-      sqft: "750",
-      type: "For Rent",
-      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&h=400&fit=crop",
-      alt: "Beautiful beachfront property with ocean view"
-    },
-    {
-      id: 5,
-      title: "Family Home",
-      price: "$620,000",
-      location: "San Francisco, CA",
-      beds: 3,
-      baths: 2.5,
-      sqft: "1,800",
-      type: "For Sale",
-      image: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&h=400&fit=crop",
-      alt: "Beautiful family home with garden"
-    },
-    {
-      id: 6,
-      title: "Suburban House",
-      price: "$3,200/month",
-      location: "Austin, TX",
-      beds: 3,
-      baths: 2,
-      sqft: "2,000",
-      type: "For Rent",
-      image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&h=400&fit=crop",
-      alt: "Spacious suburban house with garden"
-    }
-  ];
+  if (loading) {
+    return (
+      <div style={{ ...styles.container, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div className="spinner-border text-success" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={styles.container}>
@@ -168,36 +129,53 @@ function AllProperties() {
         <p style={styles.subtitle}>Browse our complete collection of properties</p>
       </div>
       
-      <div style={styles.grid}>
-        {allProperties.map(property => (
-          <div key={property.id} style={styles.card}>
-            <img 
-              src={property.image} 
-              alt={property.alt}
-              style={styles.cardImage}
-            />
-            <div style={styles.cardContent}>
-              <h3 style={styles.propertyTitle}>{property.title}</h3>
-              <div style={styles.propertyPrice}>{property.price}</div>
-              <div style={styles.propertyLocation}>{property.location}</div>
-              <div style={styles.propertyDetails}>
-                <span>{property.beds} beds</span>
-                <span>{property.baths} baths</span>
-                <span>{property.sqft} sqft</span>
-                <span style={{color: "#E6BA5F", fontWeight: "600"}}>{property.type}</span>
+      {allProperties.length > 0 ? (
+        <div style={styles.grid}>
+          {allProperties.map(property => (
+            <Link 
+              key={property.id} 
+              to={`/properties/detail/${property.slug || property.id}`} 
+              style={styles.card}
+              onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-8px)"}
+              onMouseLeave={(e) => e.currentTarget.style.transform = "translateY(0)"}
+            >
+              <div className="position-relative">
+                <img 
+                  src={property.image_url || property.image} 
+                  alt={property.title}
+                  style={styles.cardImage}
+                />
+                <span style={styles.badge}>{property.type}</span>
               </div>
-            </div>
-          </div>
-        ))}
-      </div>
+              <div style={styles.cardContent}>
+                <h3 style={styles.propertyTitle}>{property.title}</h3>
+                <div style={styles.propertyPrice}>{property.price}</div>
+                <div style={styles.propertyLocation}>
+                  <i className="bi bi-geo-alt me-1"></i>{property.location}
+                </div>
+                <div style={styles.propertyDetails}>
+                  <span><i className="bi bi-door-open me-1"></i>{property.bedrooms} Beds</span>
+                  <span><i className="bi bi-droplet me-1"></i>{property.bathrooms} Baths</span>
+                  <span><i className="bi bi-aspect-ratio me-1"></i>{property.area_size}</span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <div style={{ textAlign: 'center', padding: '50px' }}>
+          <h3 className="text-muted">No properties found.</h3>
+          <Link to="/" className="btn btn-success mt-3">Back to Home</Link>
+        </div>
+      )}
       
-      <div style={{textAlign: "center"}}>
-        <Link to="/">
-          <button style={styles.backButton}>Back to Home</button>
+      <div style={{ textAlign: "center", marginTop: "50px" }}>
+        <Link to="/" style={{ color: "#2C4B40", fontWeight: "600", textDecoration: "none", borderBottom: "2px solid #E6BA5F" }}>
+          ← Back to Dashboard
         </Link>
       </div>
     </div>
   );
 }
 
-export default AllProperties; 
+export default AllProperties;
